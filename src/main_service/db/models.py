@@ -3,7 +3,7 @@ from sqlalchemy import String
 from datetime import datetime
 from sqlalchemy import ForeignKey
 
-from db.base import Base
+from src.main_service.db.base import Base
 
 
 class User(Base):

@@ -1,1 +1,1 @@
-from db.models import User, RefreshToken
+from src.main_service.db.models import User, RefreshToken

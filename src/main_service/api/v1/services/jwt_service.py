@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from jose import jwt
 
-from api.v1.configs.jwt_conf import SECRET_KEY, ALGORITHM, ACCESS_EXPIRE_MIN, \
+from src.main_service.api.v1.configs.jwt_conf import SECRET_KEY, ALGORITHM, ACCESS_EXPIRE_MIN, \
     REFRESH_EXPIRE_DAYS
 
 
@@ -23,4 +23,3 @@ def create_refresh_token(user_id: str):
 def decode_token(token: str):
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     return payload["sub"]
-

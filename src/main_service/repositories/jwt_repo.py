@@ -2,9 +2,9 @@ from datetime import timedelta, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.v1.configs.jwt_conf import REFRESH_EXPIRE_DAYS
-from api.v1.schemas import JWTCreateSchema
-from db.models import RefreshToken
+from src.main_service.api.v1.configs.jwt_conf import REFRESH_EXPIRE_DAYS
+from src.main_service.api.v1.schemas import JWTCreateSchema
+from src.main_service.db.models import RefreshToken
 
 
 class JWTRepo:

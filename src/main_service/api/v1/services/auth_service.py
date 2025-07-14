@@ -1,14 +1,12 @@
 import logging
 
-from api.v1.configs.crypt_conf import pwd_context
-from api.v1.configs.jwt_conf import ACCESS_EXPIRE_MIN
-from api.v1.configs.redis_conf import RedisService
-from api.v1.schemas import JWTCreateSchema, UserOutSchema, LoginResponseSchema, \
-    UserCreateSchema
-from api.v1.services.jwt_service import create_access_token, \
-    create_refresh_token
-from repositories.jwt_repo import JWTRepo
-from repositories.user_repo import UserRepository
+from src.main_service.api.v1.configs.crypt_conf import pwd_context
+from src.main_service.api.v1.configs.jwt_conf import ACCESS_EXPIRE_MIN
+from src.main_service.api.v1.configs.redis_conf import RedisService
+from src.main_service.api.v1.schemas import JWTCreateSchema, LoginResponseSchema, UserOutSchema, UserCreateSchema
+from src.main_service.api.v1.services.jwt_service import create_refresh_token, create_access_token
+from src.main_service.repositories.jwt_repo import JWTRepo
+from src.main_service.repositories.user_repo import UserRepository
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
-name_dir = "main_logs"
+name_dir = "src/main_service/main_logs"
 os.makedirs(name_dir, exist_ok=True)
 
 # Общий формат логов

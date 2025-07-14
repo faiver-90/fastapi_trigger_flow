@@ -3,14 +3,13 @@ import logging
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.v1.configs.redis_conf import redis_service
-from api.v1.schemas import AuthInSchema, UserOutSchema, UserCreateSchema, \
-    LoginResponseSchema
-from api.v1.services.auth_service import AuthService
-from api.v1.services.exceptions_handlers import handle_internal_errors
-from db.session import get_async_session
-from repositories.jwt_repo import JWTRepo
-from repositories.user_repo import UserRepository
+from src.main_service.api.v1.configs.redis_conf import redis_service
+from src.main_service.api.v1.schemas import LoginResponseSchema, AuthInSchema, UserOutSchema, UserCreateSchema
+from src.main_service.api.v1.services.auth_service import AuthService
+from src.main_service.api.v1.services.exceptions_handlers import handle_internal_errors
+from src.main_service.db.session import get_async_session
+from src.main_service.repositories.jwt_repo import JWTRepo
+from src.main_service.repositories.user_repo import UserRepository
 
 v1 = APIRouter()
 

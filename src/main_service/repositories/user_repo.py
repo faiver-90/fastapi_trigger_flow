@@ -3,8 +3,8 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, exists, or_, update
 
-from api.v1.schemas import UserCreateSchema
-from db.models import User
+from src.main_service.api.v1.schemas import UserCreateSchema
+from src.main_service.db.models import User
 
 
 class UserRepository:
