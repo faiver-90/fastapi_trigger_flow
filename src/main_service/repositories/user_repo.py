@@ -11,7 +11,7 @@ class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_fields(self, **kwargs: dict[str, Any]) -> User | None:
+    async def get_by_fields(self, **kwargs) -> User | None:
         conditions = [getattr(User, key) == value for key, value in
                       kwargs.items()]
 

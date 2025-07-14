@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 from functools import wraps
 from fastapi.responses import JSONResponse
 from typing import Type, Callable, Dict
@@ -9,9 +10,7 @@ logger = logging.getLogger(__name__)
 
 class ExceptionHandlerFactory:
     def __init__(self):
-        self._handlers: Dict[
-            Type[Exception],
-            Callable[[Exception], JSONResponse]] = {}
+        self._handlers: Dict[Type[Exception], Callable[[Exception], JSONResponse]] = {}
 
     def register(self, exc_type: Type[Exception]):
         def decorator(handler_func: Callable[[Exception], JSONResponse]):
@@ -20,9 +19,7 @@ class ExceptionHandlerFactory:
 
         return decorator
 
-    def get_handler(self,
-                    exc: Exception,
-                    default_status_code: int) -> JSONResponse:
+    def get_handler(self, exc: Exception, default_status_code: int) -> JSONResponse:
         for exc_type, handler in self._handlers.items():
             if isinstance(exc, exc_type):
                 return handler(exc)
@@ -42,6 +39,28 @@ class ExceptionHandlerFactory:
 exception_handler_factory = ExceptionHandlerFactory()
 
 
+@exception_handler_factory.register(ValueError)
+def handle_value_error(exc: ValueError):
+    tb = traceback.extract_tb(exc.__traceback__)
+    if tb:
+        last_frame = tb[-1]
+        func_name = last_frame.name
+        filename = last_frame.filename
+        lineno = last_frame.lineno
+    else:
+        func_name = filename = lineno = None
+    logger.error(f"ValueError: {exc} (in {func_name} at {filename}:{lineno})")
+    return JSONResponse(
+        status_code=400,
+        content={
+            "status": "error",
+            "code": 400,
+            "message": f"ValueError: {exc}",
+            "from": "handle_value_error"
+        }
+    )
+
+
 @exception_handler_factory.register(KeyError)
 def handle_key_error(exc: KeyError):
     logger.error(f"KeyError: {exc}")
@@ -51,7 +70,7 @@ def handle_key_error(exc: KeyError):
             "status": "error",
             "code": 400,
             "message": f"Missing key: {exc}",
-            "from": "handle_internal_errors"
+            "from": "handle_key_error"
         }
     )
 
@@ -65,7 +84,7 @@ def handle_json_decode_error(exc: json.JSONDecodeError):
             "status": "error",
             "code": 502,
             "message": f"Invalid JSON from service: {exc}",
-            "from": "handle_internal_errors"
+            "from": "handle_json_decode_error"
         }
     )
 
@@ -79,7 +98,7 @@ def handle_type_error(exc: TypeError):
             "status": "error",
             "code": 500,
             "message": f"Type mismatch: {exc}",
-            "from": "handle_internal_errors"
+            "from": "handle_type_error"
         }
     )
 
@@ -91,9 +110,7 @@ def handle_internal_errors(default_status_code: int = 500):
             try:
                 return await func(*args, **kwargs)
             except Exception as exc:
-                return exception_handler_factory.get_handler(
-                    exc,
-                    default_status_code)
+                return exception_handler_factory.get_handler(exc, default_status_code)
 
         return wrapper
 

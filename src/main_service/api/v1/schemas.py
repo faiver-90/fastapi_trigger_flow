@@ -3,15 +3,9 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 
 
-class JWTCreateSchema(BaseModel):
-    user_id: int
-    token: str
-
-
 class AuthInSchema(BaseModel):
     password: str
     username: str
-    chat_id: str
 
 
 class AuthOutSchema(BaseModel):
@@ -35,7 +29,12 @@ class UserOutSchema(BaseModel):
         from_attributes = True
 
 
-class TokenResponseSchema(BaseModel):
+class JWTCreateSchema(BaseModel):
+    user_id: int
+    token: str
+
+
+class LoginResponseSchema(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"

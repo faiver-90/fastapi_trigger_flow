@@ -2,11 +2,11 @@ import logging
 
 from api.v1.configs.crypt_conf import pwd_context
 from api.v1.configs.jwt_conf import ACCESS_EXPIRE_MIN
-from api.v1.schemas import JWTCreateSchema, UserOutSchema, TokenResponseSchema, \
+from api.v1.configs.redis_conf import RedisService
+from api.v1.schemas import JWTCreateSchema, UserOutSchema, LoginResponseSchema, \
     UserCreateSchema
 from api.v1.services.jwt_service import create_access_token, \
     create_refresh_token
-from api.v1.services.redis_service import RedisService
 from repositories.jwt_repo import JWTRepo
 from repositories.user_repo import UserRepository
 
@@ -15,43 +15,35 @@ logger = logging.getLogger(__name__)
 
 class AuthService:
     def __init__(self,
-                 user_repo: UserRepository = None,
-                 jwt_repo: JWTRepo = None,
-                 redis_service: RedisService = None):
+                 user_repo: UserRepository = None, jwt_repo: JWTRepo = None, redis_client: RedisService = None):
         self.user_repo = user_repo
         self.jwt_repo = jwt_repo
-        self.redis_service = redis_service
+        self.redis_client = redis_client
 
-    async def login(self, username: str, password: str, chat_id: str):
+    async def login(self, username: str, password: str):
         user = await self.user_repo.get_by_fields(username=username)
-        if not user:
-            logger.error(f'Invalid username or password. Username - '
-                         f'{username}')
+
+        if not user or not pwd_context.verify(password, user.hashed_password):
+            logger.error('Invalid username or password.')
             raise ValueError("Invalid username or password")
 
-        if not pwd_context.verify(password, user.hashed_password):
-            logger.error(f'Invalid username or password. Username - '
-                         f'{username}')
-            raise ValueError("Invalid username or password")
+        user_id = user.id
 
-        access = create_access_token(user.username)
-        refresh = create_refresh_token(user.username)
+        access = create_access_token(username)
+        refresh = create_refresh_token(username)
 
-        if not await self.redis_service.get_auth_token(chat_id):
-            await self.redis_service.save_auth_token(chat_id,
-                                                     access,
-                                                     60 * ACCESS_EXPIRE_MIN)
+        await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)
 
-        jwt = await self.jwt_repo.create(JWTCreateSchema(user_id=user.id,
-                                                         token=refresh))
-        return TokenResponseSchema(
+        jwt = await self.jwt_repo.create(JWTCreateSchema(user_id=user_id, token=refresh))
+
+        return LoginResponseSchema(
             access_token=access,
             refresh_token=refresh,
             token_type="bearer",
             expires_at=jwt.expires_at,
             user=UserOutSchema(
-                id=user.id,
-                username=user.username,
+                id=user_id,
+                username=username,
                 email=user.email,
                 is_superuser=user.is_superuser
             )
