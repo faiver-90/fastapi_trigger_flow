@@ -10,7 +10,7 @@ enable_utc = True
 
 beat_schedule = {
     "sync-articles-every-5-min": {
-        "task": "sync_articles_2",
+        "task": "sync_articles",
         "schedule": crontab(minute="*"),
     },
 }
