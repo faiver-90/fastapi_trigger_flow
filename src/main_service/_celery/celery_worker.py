@@ -4,7 +4,7 @@ celery_app = Celery(
     "search_service",
     broker="redis://redis:6379/0",
     backend="redis://redis:6379/1",
-    include=["_celery.tasks"],
+    include=["src.main_service._celery.tasks"],
 )
 
 celery_app.conf.beat_schedule = {
