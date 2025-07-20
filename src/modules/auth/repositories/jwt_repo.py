@@ -2,8 +2,8 @@ from datetime import timedelta, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.shared.configs.jwt_conf import REFRESH_EXPIRE_DAYS
 from src.modules.auth.api.v1.schemas import JWTCreateSchema
+from src.modules.auth.configs.jwt_conf import REFRESH_EXPIRE_DAYS
 from src.shared.db.models.auth import RefreshToken
 
 

@@ -2,7 +2,7 @@ import json
 import pytest
 from fastapi.responses import JSONResponse
 
-from src.shared.exceptions_handle.exceptions_handlers import exception_handler_factory, handle_internal_errors
+from src.modules.auth.exceptions_handle.exceptions_handlers import exception_handler_factory, handle_internal_errors
 
 
 def raise_value_error():

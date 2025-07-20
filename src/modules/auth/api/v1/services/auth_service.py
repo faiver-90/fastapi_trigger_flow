@@ -1,10 +1,18 @@
+import logging
+
 from src.modules.auth.api.v1.services.jwt_service import create_access_token, create_refresh_token
-from src.shared.configs.crypt_conf import pwd_context
-from src.shared.configs.jwt_conf import ACCESS_EXPIRE_MIN
+
 from src.modules.auth.api.v1.schemas import JWTCreateSchema, LoginResponseSchema, UserOutSchema, UserCreateSchema
+from src.modules.auth.configs.crypt_conf import pwd_context
+from src.modules.auth.configs.jwt_conf import ACCESS_EXPIRE_MIN
+from src.modules.auth.configs.log_conf import setup_auth_logger
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
 from src.modules.auth.api.v1.services.redis_service import RedisService
+
+setup_auth_logger()
+auth_logger = logging.getLogger('auth')
+errors_logger = logging.getLogger('errors')
 
 
 class AuthService:
@@ -18,6 +26,8 @@ class AuthService:
         user = await self.user_repo.get_by_fields(username=username)
 
         if not user or not pwd_context.verify(password, user.hashed_password):
+            auth_logger.info(f"User {username} unsuccessfully logged in")
+            errors_logger.error(f"Invalid username or password {username}")
             raise ValueError("Invalid username or password")
 
         user_id = str(user.id)
@@ -46,10 +56,9 @@ class AuthService:
         )
 
     async def register_user(self, data: UserCreateSchema):
-        existing_user = await self.user_repo.exists_by_fields(
-            email=data.email,
-            username=data.username)
+        existing_user = await self.user_repo.exists_by_fields(email=data.email, username=data.username)
         if existing_user:
+            auth_logger.info(f"User with this {data.email} or {data.username} already exists")
             raise ValueError("User with this email or username already exists")
 
         hashed_password = pwd_context.hash(data.password)

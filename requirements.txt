@@ -51,6 +51,7 @@ pytest-asyncio==1.0.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-jose==3.4.0
+python-json-logger==3.3.0
 python-multipart==0.0.20
 pytz==2025.2
 PyYAML==6.0.2

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 
 from src.modules.auth.api.v1.auth_router import v1
-from src.shared.exceptions_handle.stream_exceptions_handlers import validation_exception_handler, \
+from src.modules.auth.exceptions_handle.stream_exceptions_handlers import validation_exception_handler, \
     http_exception_handler, generic_exception_handler
 
 

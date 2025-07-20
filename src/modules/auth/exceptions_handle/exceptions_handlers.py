@@ -5,7 +5,10 @@ from functools import wraps
 from fastapi.responses import JSONResponse
 from typing import Type, Callable, Dict
 
-logger = logging.getLogger(__name__)
+from src.modules.auth.configs.log_conf import setup_auth_logger
+
+setup_auth_logger()
+error_logger = logging.getLogger("errors")
 
 
 class ExceptionHandlerFactory:
@@ -24,7 +27,7 @@ class ExceptionHandlerFactory:
             if isinstance(exc, exc_type):
                 return handler(exc)
 
-        logger.exception("Unhandled exception in handler factory: %s", exc)
+        error_logger.exception("Unhandled exception in handler factory: %s", exc)
         return JSONResponse(
             status_code=default_status_code,
             content={
@@ -41,7 +44,7 @@ exception_handler_factory = ExceptionHandlerFactory()
 
 @exception_handler_factory.register(json.JSONDecodeError)
 def handle_json_decode_error(exc: json.JSONDecodeError):
-    logger.error(f"JSONDecodeError: {exc}")
+    error_logger.error(f"JSONDecodeError: {exc}")
     return JSONResponse(
         status_code=502,
         content={
@@ -63,7 +66,7 @@ def handle_value_error(exc: ValueError):
         lineno = last_frame.lineno
     else:
         func_name = filename = lineno = None
-    logger.error(f"ValueError: {exc} (in {func_name} at {filename}:{lineno})")
+    error_logger.error(f"ValueError: {exc} (in {func_name} at {filename}:{lineno})")
     return JSONResponse(
         status_code=400,
         content={
@@ -77,7 +80,7 @@ def handle_value_error(exc: ValueError):
 
 @exception_handler_factory.register(KeyError)
 def handle_key_error(exc: KeyError):
-    logger.error(f"KeyError: {exc}")
+    error_logger.error(f"KeyError: {exc}")
     return JSONResponse(
         status_code=400,
         content={
@@ -91,7 +94,7 @@ def handle_key_error(exc: KeyError):
 
 @exception_handler_factory.register(TypeError)
 def handle_type_error(exc: TypeError):
-    logger.error(f"TypeError: {exc}")
+    error_logger.error(f"TypeError: {exc}")
     return JSONResponse(
         status_code=500,
         content={

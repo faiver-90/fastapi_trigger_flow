@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from jose import jwt
 
-from src.shared.configs.jwt_conf import SECRET_KEY, ALGORITHM, ACCESS_EXPIRE_MIN, \
+from src.modules.auth.configs.jwt_conf import SECRET_KEY, ALGORITHM, ACCESS_EXPIRE_MIN, \
     REFRESH_EXPIRE_DAYS
 
 
