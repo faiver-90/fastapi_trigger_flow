@@ -18,7 +18,7 @@ services:
       bash -c "
       pip install --no-cache-dir -r requirements.txt && 
       alembic upgrade head &&
-      uvicorn src.main_service.init_app:app --host 0.0.0.0 --port 8001 --reload"
+      uvicorn src.main_app.init_app:app --host 0.0.0.0 --port 8001 --reload"
     restart: always
     volumes:
       - ./:/app
@@ -40,7 +40,7 @@ services:
     build: .
     command: bash -c "
       pip install -r requirements.txt &&
-      celery -A src.main_service._celery.celery_worker.celery_app beat -l info"
+      celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
     volumes:
       - ./:/app
     depends_on:
@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
     command: bash -c "
       pip install -r requirements.txt &&
-      celery -A src.main_service._celery.celery_worker.celery_app worker -l info"
+      celery -A src.shared.celery_module.celery_worker.celery_app worker -l info"
     volumes:
       - ./:/app
     depends_on:
