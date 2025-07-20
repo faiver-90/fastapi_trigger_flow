@@ -28,17 +28,11 @@ class UserRepository:
         return result.scalar()
 
     async def update_user_by_id(self, user_id: int, data: dict):
-        stmt = (
-            update(User)
-            .where(User.id == user_id)
-            .values(**data)
-        )
+        stmt = (update(User).where(User.id == user_id).values(**data))
         await self.session.execute(stmt)
         await self.session.commit()
 
-    async def create(self,
-                     user_data: UserCreateSchema,
-                     hashed_password: str) -> User:
+    async def create(self, user_data: UserCreateSchema, hashed_password: str) -> User:
         user = User(
             username=user_data.username,
             email=user_data.email,

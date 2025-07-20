@@ -1,6 +1,8 @@
 import pytest
 
 from src.main_service.api.v1.schemas import UserCreateSchema, LoginResponseSchema
+from unittest.mock import MagicMock, AsyncMock
+from src.main_service.db.models import User
 
 
 @pytest.mark.anyio
@@ -69,3 +71,80 @@ async def test_register_user_already_exists(auth_service, mock_user_repo, mock_u
 
     with pytest.raises(ValueError, match="User with this email or username already exists"):
         await auth_service.register_user(data)
+
+
+# Auth repo
+@pytest.mark.anyio
+async def test_get_by_fields_found(user_repo, async_mock_session, fake_user, mock_result):
+    mock_result.scalar_one_or_none.return_value = fake_user
+    async_mock_session.execute.return_value = mock_result
+
+    result = await user_repo.get_by_fields(username="testuser")
+
+    async_mock_session.execute.assert_called_once()
+    assert result == fake_user
+
+
+@pytest.mark.anyio
+async def test_get_by_fields_not_found(user_repo, async_mock_session, mock_result):
+    mock_result.scalar_one_or_none.return_value = None
+    async_mock_session.execute.return_value = mock_result
+
+    result = await user_repo.get_by_fields(email="nope@example.com")
+
+    async_mock_session.execute.assert_called_once()
+    assert result is None
+
+
+@pytest.mark.anyio
+async def test_exists_by_fields_true(user_repo, async_mock_session, mock_result):
+    mock_result.scalar.return_value = True
+    async_mock_session.execute.return_value = mock_result
+
+    result = await user_repo.exists_by_fields(username="testuser")
+
+    async_mock_session.execute.assert_called_once()
+    assert result is True
+
+
+@pytest.mark.anyio
+async def test_exists_by_fields_false(user_repo, async_mock_session, mock_result):
+    mock_result.scalar.return_value = False
+    async_mock_session.execute.return_value = mock_result
+
+    result = await user_repo.exists_by_fields(email="missing@example.com")
+
+    async_mock_session.execute.assert_called_once()
+    assert result is False
+
+
+@pytest.mark.anyio
+async def test_update_user_by_id(user_repo, async_mock_session):
+    data = {"email": "new@example.com"}
+
+    await user_repo.update_user_by_id(user_id=1, data=data)
+
+    async_mock_session.execute.assert_called_once()
+    async_mock_session.commit.assert_called_once()
+
+
+@pytest.mark.anyio
+async def test_create_user(user_repo, async_mock_session, fake_user):
+    schema = UserCreateSchema(
+        username=fake_user.username,
+        email=fake_user.email,
+        password="plaintext"
+    )
+
+    async_mock_session.refresh = AsyncMock()
+
+    user = await user_repo.create(user_data=schema, hashed_password=schema.password)
+
+    async_mock_session.add.assert_called_once()
+    async_mock_session.commit.assert_called_once()
+    async_mock_session.refresh.assert_called_once_with(user)
+
+    assert isinstance(user, User)
+    assert user.username == "testuser"
+    assert user.email == "test@example.com"
+    assert user.hashed_password == "plaintext"

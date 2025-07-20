@@ -16,8 +16,8 @@ TEST_USER_ID = "123"
 
 # JWT repo
 @pytest.mark.asyncio
-async def test_create_repo_jwt_token(mock_session):
-    repo = JWTRepo(session=mock_session)
+async def test_create_repo_jwt_token(async_mock_session):
+    repo = JWTRepo(session=async_mock_session)
     schema = JWTCreateSchema(user_id=1, token="mock_token")
 
     result = await repo.create(schema)
@@ -27,9 +27,9 @@ async def test_create_repo_jwt_token(mock_session):
     assert result.token == schema.token
     assert not result.revoked
 
-    mock_session.add.assert_called_once()
-    mock_session.commit.assert_called_once()
-    mock_session.refresh.assert_called_once_with(result)
+    async_mock_session.add.assert_called_once()
+    async_mock_session.commit.assert_called_once()
+    async_mock_session.refresh.assert_called_once_with(result)
 
 
 # JWT service
