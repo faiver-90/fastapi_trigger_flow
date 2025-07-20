@@ -39,6 +39,20 @@ class ExceptionHandlerFactory:
 exception_handler_factory = ExceptionHandlerFactory()
 
 
+@exception_handler_factory.register(json.JSONDecodeError)
+def handle_json_decode_error(exc: json.JSONDecodeError):
+    logger.error(f"JSONDecodeError: {exc}")
+    return JSONResponse(
+        status_code=502,
+        content={
+            "status": "error",
+            "code": 502,
+            "message": f"Invalid JSON from service: {exc}",
+            "from": "handle_json_decode_error"
+        }
+    )
+
+
 @exception_handler_factory.register(ValueError)
 def handle_value_error(exc: ValueError):
     tb = traceback.extract_tb(exc.__traceback__)
@@ -71,20 +85,6 @@ def handle_key_error(exc: KeyError):
             "code": 400,
             "message": f"Missing key: {exc}",
             "from": "handle_key_error"
-        }
-    )
-
-
-@exception_handler_factory.register(json.JSONDecodeError)
-def handle_json_decode_error(exc: json.JSONDecodeError):
-    logger.error(f"JSONDecodeError: {exc}")
-    return JSONResponse(
-        status_code=502,
-        content={
-            "status": "error",
-            "code": 502,
-            "message": f"Invalid JSON from service: {exc}",
-            "from": "handle_json_decode_error"
         }
     )
 
