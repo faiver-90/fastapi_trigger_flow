@@ -7,7 +7,7 @@ from src.shared.exceptions_handle.stream_exceptions_handlers import validation_e
 
 
 def get_app() -> FastAPI:
-    app_init = FastAPI()
+    app_init = FastAPI(version="1.0.0")
 
     @app_init.get(
         '/',

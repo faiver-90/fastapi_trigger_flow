@@ -60,7 +60,7 @@ def test_create_refresh_token_valid():
 def test_decode_token_returns_correct_user_id():
     token = create_access_token(TEST_USER_ID)
     result = decode_token(token)
-    assert result == TEST_USER_ID
+    assert result["sub"] == TEST_USER_ID
 
 
 def test_decode_token_with_invalid_signature():

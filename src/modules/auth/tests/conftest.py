@@ -1,19 +1,19 @@
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.testclient import TestClient
 from httpx import AsyncClient, ASGITransport
 from passlib.context import CryptContext
 
+from src.modules.auth.api.v1.deps.auth_dependencies import authenticate_user, verify_superuser
 from src.modules.auth.api.v1.services.auth_service import AuthService
 from src.modules.auth.tests.fake_services.fake_redis import FakeRedis
 from src.shared.db.models.auth import User
 from src.shared.exceptions_handle.stream_exceptions_handlers import validation_exception_handler, \
     http_exception_handler, generic_exception_handler
 from src.modules.auth.repositories.user_repo import UserRepository
-
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -41,6 +41,14 @@ def test_app():
     @app.get("/")
     async def root():
         return {"It's": "Work"}
+
+    @app.get("/auth-only")
+    async def auth_only_route(user=Depends(authenticate_user)):
+        return {"user": user}
+
+    @app.get("/superuser-only")
+    async def superuser_only_route(user=Depends(verify_superuser)):
+        return {"user": user}
 
     return app
 

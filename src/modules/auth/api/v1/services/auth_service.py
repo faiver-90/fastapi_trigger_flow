@@ -20,10 +20,13 @@ class AuthService:
         if not user or not pwd_context.verify(password, user.hashed_password):
             raise ValueError("Invalid username or password")
 
-        user_id = user.id
+        user_id = str(user.id)
+        jwt_data = {
+            "is_superuser": user.is_superuser
+        }
 
-        access = create_access_token(username)
-        refresh = create_refresh_token(username)
+        access = create_access_token(user_id, **jwt_data)
+        refresh = create_refresh_token(user_id, **jwt_data)
 
         await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)
 
