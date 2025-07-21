@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 
-from src.modules.api_source.api.v1.api_source_router.crud_source import v1_api_source
+from src.modules.api_source.configs.api_source_router_conf import v1_api_source
 from src.modules.auth.api.v1.auth_router import v1_auth
 from src.modules.auth.exceptions_handle.stream_exceptions_handlers import validation_exception_handler, \
     http_exception_handler, generic_exception_handler

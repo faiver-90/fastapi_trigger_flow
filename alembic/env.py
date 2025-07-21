@@ -7,6 +7,7 @@ from sqlalchemy import pool
 
 from alembic import context
 from src.shared.db.base import Base
+from src.shared.db.models import *
 
 load_dotenv()
 
@@ -28,6 +29,7 @@ config.set_main_option(
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+print("Таблицы, видимые Alembic:", target_metadata.tables.keys())
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

@@ -9,7 +9,6 @@ from src.modules.auth.configs.log_conf import setup_auth_logger
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
 from src.modules.auth.api.v1.services.redis_service import RedisService
-from src.shared.db import User
 
 setup_auth_logger()
 auth_logger = logging.getLogger('auth')
@@ -80,7 +79,7 @@ class AuthService:
             )
         )
 
-    async def register_user(self, data: UserCreateSchema) -> User:
+    async def register_user(self, data: UserCreateSchema):
         """
         Регистрация нового пользователя.
 

@@ -34,39 +34,39 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  celery-beat:
-    container_name: main_beat
-    restart: unless-stopped
-    build: .
-    command: bash -c "
-      pip install -r requirements.txt &&
-      celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
-    volumes:
-      - ./:/app
-    depends_on:
-      - db
-      - redis
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  celery-worker:
-    container_name: main_celery
-    build: .
-    restart: unless-stopped
-    command: bash -c "
-      pip install -r requirements.txt &&
-      celery -A src.shared.celery_module.celery_worker.celery_app worker -l info"
-    volumes:
-      - ./:/app
-    depends_on:
-      - db
-      - redis
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
+#  celery-beat:
+#    container_name: main_beat
+#    restart: unless-stopped
+#    build: .
+#    command: bash -c "
+#      pip install -r requirements.txt &&
+#      celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
+#    volumes:
+#      - ./:/app
+#    depends_on:
+#      - db
+#      - redis
+#    logging:
+#      options:
+#        max-size: "10m"
+#        max-file: "3"
+#
+#  celery-worker:
+#    container_name: main_celery
+#    build: .
+#    restart: unless-stopped
+#    command: bash -c "
+#      pip install -r requirements.txt &&
+#      celery -A src.shared.celery_module.celery_worker.celery_app worker -l info"
+#    volumes:
+#      - ./:/app
+#    depends_on:
+#      - db
+#      - redis
+#    logging:
+#      options:
+#        max-size: "10m"
+#        max-file: "3"
 
   db:
     container_name: db
