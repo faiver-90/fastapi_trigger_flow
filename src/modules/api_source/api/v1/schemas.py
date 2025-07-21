@@ -10,7 +10,7 @@ class DataSourceBase(BaseModel):
 
 
 class DataSourceCreate(DataSourceBase):
-    pass
+    source_key: str
 
 
 class DataSourceUpdate(BaseModel):
