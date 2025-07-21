@@ -9,7 +9,6 @@ from passlib.context import CryptContext
 
 from src.modules.auth.api.v1.deps.auth_dependencies import authenticate_user, verify_superuser
 from src.modules.auth.api.v1.services.auth_service import AuthService
-from src.modules.auth.tests.fake_services.fake_redis import FakeRedis
 from src.shared.db.models.auth import User
 from src.modules.auth.exceptions_handle.stream_exceptions_handlers import validation_exception_handler, \
     http_exception_handler, generic_exception_handler
