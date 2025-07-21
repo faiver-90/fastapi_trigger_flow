@@ -8,6 +8,18 @@ token_scheme = HTTPBearer()
 
 
 async def authenticate_user(credentials: HTTPAuthorizationCredentials = Depends(token_scheme)):
+    """
+    Аутентификация пользователя по JWT токену из заголовка Authorization.
+
+    Args:
+        credentials (HTTPAuthorizationCredentials): Данные авторизации (тип и сам токен).
+
+    Returns:
+        dict: Расшифрованный payload из токена.
+
+    Raises:
+        HTTPException: Если токен некорректен или просрочен.
+    """
     token = credentials.credentials
     try:
         return decode_token(token)
@@ -19,6 +31,18 @@ async def authenticate_user(credentials: HTTPAuthorizationCredentials = Depends(
 
 
 async def verify_superuser(payload: dict = Depends(authenticate_user)):
+    """
+    Проверка, что пользователь обладает правами суперпользователя.
+
+    Args:
+        payload (dict): Декодированные данные из JWT токена.
+
+    Returns:
+        dict: Те же данные payload, если пользователь суперпользователь.
+
+    Raises:
+        HTTPException: Если пользователь не является суперпользователем.
+    """
     if not payload.get("is_superuser"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

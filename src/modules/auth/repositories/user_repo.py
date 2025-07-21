@@ -6,10 +6,32 @@ from src.shared.db.models.auth import User
 
 
 class UserRepository:
+    """
+    Репозиторий для работы с моделью пользователя.
+    """
     def __init__(self, session: AsyncSession):
+        """
+        Инициализация сессии SQLAlchemy.
+
+        Args:
+            session (AsyncSession): Асинхронная сессия базы данных.
+        """
         self.session = session
 
     async def get_by_fields(self, **kwargs) -> User | None:
+        """
+        Получить пользователя по полям (например, username, email).
+
+        Args:
+            **kwargs: Произвольные поля модели User.
+
+        Returns:
+            User | None: Найденный пользователь или None.
+
+        Raises:
+            ValueError: Если поле не существует в модели.
+        """
+
         conditions = []
         for key, value in kwargs.items():
             if hasattr(User, key):
@@ -22,6 +44,18 @@ class UserRepository:
         return result.scalar_one_or_none()
 
     async def exists_by_fields(self, **kwargs) -> bool:
+        """
+        Проверить, существует ли пользователь по указанным полям.
+
+        Args:
+            **kwargs: Произвольные поля модели User.
+
+        Returns:
+            bool: True, если пользователь существует, иначе False.
+
+        Raises:
+            ValueError: Если поле не существует в модели.
+        """
         conditions = []
         for key, value in kwargs.items():
             if hasattr(User, key):
@@ -41,6 +75,16 @@ class UserRepository:
     #     return await self.get_by_fields(id=user_id)
 
     async def create(self, user_data: UserCreateSchema, hashed_password: str) -> User:
+        """
+        Создание нового пользователя.
+
+        Args:
+            user_data (UserCreateSchema): Данные для создания пользователя.
+            hashed_password (str): Хэш пароля.
+
+        Returns:
+            User: Созданный пользователь.
+        """
         user = User(
             username=user_data.username,
             email=user_data.email,

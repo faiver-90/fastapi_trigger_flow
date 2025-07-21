@@ -9,6 +9,15 @@ from src.shared.db.session import get_async_session
 
 
 def get_auth_service(db: AsyncSession = Depends(get_async_session)) -> AuthService:
+    """
+    Провайдер зависимостей для получения экземпляра AuthService с необходимыми репозиториями.
+
+    Args:
+        db (AsyncSession): Асинхронная сессия базы данных, предоставляется через Depends.
+
+    Returns:
+        AuthService: Экземпляр сервиса авторизации.
+    """
     return AuthService(
         user_repo=UserRepository(db),
         jwt_repo=JWTRepo(db),

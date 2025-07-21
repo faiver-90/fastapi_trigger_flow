@@ -16,13 +16,37 @@ errors_logger = logging.getLogger('errors')
 
 
 class AuthService:
+    """
+    Сервис авторизации пользователей. Отвечает за вход, регистрацию, генерацию токенов и их сохранение.
+    """
     def __init__(self,
                  user_repo: UserRepository = None, jwt_repo: JWTRepo = None, redis_client: RedisService = None):
+        """
+        Инициализация сервиса.
+
+        Args:
+            user_repo (UserRepository): Репозиторий пользователей.
+            jwt_repo (JWTRepo): Репозиторий JWT токенов.
+            redis_client (RedisService): Клиент Redis для хранения access токенов.
+       """
         self.user_repo = user_repo
         self.jwt_repo = jwt_repo
         self.redis_client = redis_client
 
     async def login(self, username: str, password: str):
+        """
+        Аутентификация пользователя и выдача JWT токенов.
+
+        Args:
+            username (str): Имя пользователя.
+            password (str): Пароль.
+
+        Returns:
+            LoginResponseSchema: JWT токены и информация о пользователе.
+
+        Raises:
+            ValueError: Если логин или пароль неверные.
+        """
         user = await self.user_repo.get_by_fields(username=username)
 
         if not user or not pwd_context.verify(password, user.hashed_password):
@@ -55,7 +79,19 @@ class AuthService:
             )
         )
 
-    async def register_user(self, data: UserCreateSchema):
+    async def register_user(self, data: UserCreateSchema) -> User:
+        """
+        Регистрация нового пользователя.
+
+        Args:
+            data (UserCreateSchema): Данные для создания пользователя.
+
+        Returns:
+            User: Созданный пользователь.
+
+        Raises:
+            ValueError: Если пользователь с таким email или username уже существует.
+        """
         existing_user = await self.user_repo.exists_by_fields(email=data.email, username=data.username)
         if existing_user:
             auth_logger.info(f"User with this {data.email} or {data.username} already exists")
