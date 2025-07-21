@@ -22,5 +22,6 @@ class DataSourceUpdate(BaseModel):
 class DataSourceOut(DataSourceBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }

@@ -25,8 +25,9 @@ class UserOutSchema(BaseModel):
     email: EmailStr
     is_superuser: bool
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
 
 class JWTCreateSchema(BaseModel):

@@ -7,7 +7,6 @@ from src.modules.auth.api.v1.schemas import LoginResponseSchema, AuthInSchema, U
 from src.modules.auth.api.v1.services.auth_service import AuthService
 from src.modules.auth.api.v1.services.redis_service import redis_service
 from src.modules.auth.configs.log_conf import setup_auth_logger
-from src.modules.auth.exceptions_handle.exceptions_handlers import handle_internal_errors
 from src.shared.db.session import get_async_session
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
@@ -24,7 +23,6 @@ auth_logger = logging.getLogger('auth')
     summary="Вход пользователя",
     description="Авторизация по имени пользователя и паролю. Возвращает JWT токен и информацию о пользователе."
 )
-@handle_internal_errors()
 async def login(token_data: AuthInSchema, db: AsyncSession = Depends(get_async_session)):
     service = AuthService(UserRepository(db), JWTRepo(db), redis_service)
     username = token_data.username
@@ -41,7 +39,6 @@ async def login(token_data: AuthInSchema, db: AsyncSession = Depends(get_async_s
     description="Регистрирует нового пользователя с заданными email, username и паролем. "
                 "Возвращает данные пользователя."
 )
-@handle_internal_errors()
 async def register(data: UserCreateSchema, db: AsyncSession = Depends(get_async_session)):
     service = AuthService(UserRepository(db))
     user = await service.register_user(data)

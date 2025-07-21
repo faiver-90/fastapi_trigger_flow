@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import Depends, HTTPException
 
 from src.modules.api_source.api.v1.schemas import DataSourceOut, DataSourceCreate, DataSourceUpdate
 from src.modules.api_source.api.v1.deps.get_service import get_data_source_service
