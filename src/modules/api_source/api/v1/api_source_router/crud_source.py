@@ -10,6 +10,7 @@ from src.modules.api_source.configs.api_source_router_conf import v1_api_source
 @v1_api_source.post(
     "/",
     response_model=DataSourceOut,
+    dependencies=[Depends(authenticate_user)],
     summary="Создание источника данных",
     description="Создаёт новый источник данных с указанными параметрами: имя, учётные данные и статус активности."
 )
