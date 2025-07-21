@@ -12,18 +12,17 @@ from src.shared.db.session import get_async_session
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
 
-v1 = APIRouter()
+v1_auth = APIRouter(prefix="/auth", tags=["Authentication, authorisation"])
 
 setup_auth_logger()
 auth_logger = logging.getLogger('auth')
 
 
-@v1.post(
+@v1_auth.post(
     "/login",
     response_model=LoginResponseSchema,
     summary="Вход пользователя",
-    description="Авторизация по имени пользователя и паролю. Возвращает JWT токен и информацию о пользователе.",
-    tags=["Аутентификация"]
+    description="Авторизация по имени пользователя и паролю. Возвращает JWT токен и информацию о пользователе."
 )
 @handle_internal_errors()
 async def login(token_data: AuthInSchema, db: AsyncSession = Depends(get_async_session)):
@@ -35,13 +34,12 @@ async def login(token_data: AuthInSchema, db: AsyncSession = Depends(get_async_s
     return token_data
 
 
-@v1.post(
+@v1_auth.post(
     "/register",
     response_model=UserOutSchema,
     summary="Регистрация нового пользователя",
     description="Регистрирует нового пользователя с заданными email, username и паролем. "
-                "Возвращает данные пользователя.",
-    tags=["Аутентификация"]
+                "Возвращает данные пользователя."
 )
 @handle_internal_errors()
 async def register(data: UserCreateSchema, db: AsyncSession = Depends(get_async_session)):

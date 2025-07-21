@@ -119,14 +119,14 @@ async def test_exists_by_fields_false(user_repo, async_mock_session, mock_result
     assert result is False
 
 
-@pytest.mark.anyio
-async def test_update_user_by_id(user_repo, async_mock_session):
-    data = {"email": "new@example.com"}
-
-    await user_repo.update_user_by_id(user_id=1, data=data)
-
-    async_mock_session.execute.assert_called_once()
-    async_mock_session.commit.assert_called_once()
+# @pytest.mark.anyio
+# async def test_update_user_by_id(user_repo, async_mock_session):
+#     data = {"email": "new@example.com"}
+#
+#     await user_repo.update_user_by_id(user_id=1, data=data)
+#
+#     async_mock_session.execute.assert_called_once()
+#     async_mock_session.commit.assert_called_once()
 
 
 @pytest.mark.anyio

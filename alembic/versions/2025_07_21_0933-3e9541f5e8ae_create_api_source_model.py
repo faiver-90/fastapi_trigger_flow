@@ -1,8 +1,8 @@
-"""message
+"""create api source model
 
-Revision ID: 5c95c89d5ea7
-Revises: 93725381c116
-Create Date: 2025-07-13 16:07:41.187602
+Revision ID: 3e9541f5e8ae
+Revises: 3708dce1fe45
+Create Date: 2025-07-21 09:33:47.988372
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5c95c89d5ea7'
-down_revision: Union[str, None] = '93725381c116'
+revision: str = '3e9541f5e8ae'
+down_revision: Union[str, None] = '3708dce1fe45'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
