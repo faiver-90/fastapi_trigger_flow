@@ -1,5 +1,3 @@
-import asyncio
-
 import httpx
 from typing import Any, Dict, List, Optional
 
@@ -25,7 +23,7 @@ class OpenWeatherService:
             city: Optional[str] = None,
             lat: Optional[float] = None,
             lon: Optional[float] = None,
-            units: str = "standard",
+            units: str = "metric",
             lang: str = "en",
     ) -> Dict[str, Any]:
         """

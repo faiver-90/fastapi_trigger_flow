@@ -81,11 +81,6 @@ def anyio_backend():
 
 
 @pytest.fixture(scope="function")
-def fake_redis():
-    return FakeRedis()
-
-
-@pytest.fixture(scope="function")
 def mock_user_repo():
     return AsyncMock()
 

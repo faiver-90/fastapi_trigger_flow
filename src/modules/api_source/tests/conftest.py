@@ -6,7 +6,6 @@ from fastapi.testclient import TestClient
 from httpx import AsyncClient, ASGITransport
 from passlib.context import CryptContext
 
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -42,11 +41,6 @@ def async_mock_session():
 @pytest.fixture(scope="session")
 def anyio_backend():
     return "asyncio"
-#
-#
-# @pytest.fixture(scope="function")
-# def fake_redis():
-#     return FakeRedis()
 
 
 @pytest.fixture(scope="function")
