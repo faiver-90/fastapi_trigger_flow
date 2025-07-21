@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException
 
+from src.modules.api_source.api.v1.deps.auth_dependencies import authenticate_user
 from src.modules.api_source.api.v1.schemas import DataSourceOut, DataSourceCreate, DataSourceUpdate
 from src.modules.api_source.api.v1.deps.get_service import get_data_source_service
 from src.modules.api_source.api.v1.services.data_source_service import CRUDDataSourceService
@@ -22,6 +23,7 @@ async def create_api_source(
 @v1_api_source.get(
     "/{source_id}",
     response_model=DataSourceOut,
+    dependencies=[Depends(authenticate_user)],
     summary="Получить источник данных",
     description="Возвращает информацию об источнике данных по его ID. Если источник не найден — возвращает ошибку 404."
 )
@@ -38,6 +40,7 @@ async def get_api_source(
 @v1_api_source.get(
     "/",
     response_model=list[DataSourceOut],
+    dependencies=[Depends(authenticate_user)],
     summary="Список источников данных",
     description="Возвращает список всех источников данных. "
                 "Можно указать параметр `user_id` для фильтрации по пользователю."
@@ -52,6 +55,7 @@ async def list_api_sources(
 @v1_api_source.put(
     "/{source_id}",
     response_model=DataSourceOut,
+    dependencies=[Depends(authenticate_user)],
     summary="Обновить источник данных",
     description="Обновляет данные источника по его ID. Принимает изменённые поля и возвращает обновлённый объект."
                 " Ошибка 404, если не найден."
@@ -69,6 +73,7 @@ async def update_api_source(
 
 @v1_api_source.delete(
     "/{source_id}",
+    dependencies=[Depends(authenticate_user)],
     summary="Удалить источник данных",
     description="Удаляет источник данных по ID. Если источник не найден — возвращает ошибку 404. "
                 "Возвращает статус успешного удаления."
