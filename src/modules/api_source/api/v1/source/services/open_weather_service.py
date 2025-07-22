@@ -79,14 +79,3 @@ class OpenWeatherService:
     async def close(self):
         """Закрыть HTTP-клиент."""
         await self.client.aclose()
-
-
-async def get_temperature():
-    with get_sync_session() as session:
-        stm = select(Trigger).where(Trigger.id == 1)
-        response = session.execute(stm)
-        data: Trigger = response.scalar_one_or_none()
-        print(data.condition)
-
-
-asyncio.run(get_temperature())
