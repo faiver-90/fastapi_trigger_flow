@@ -139,7 +139,7 @@ async def test_create_user(user_repo, async_mock_session, fake_user):
 
     async_mock_session.refresh = AsyncMock()
 
-    user = await user_repo.create(user_data=schema, hashed_password=schema.password)
+    user = await user_repo.create(user_data=schema.dict(exclude='password'), hashed_password=schema.password)
 
     async_mock_session.add.assert_called_once()
     async_mock_session.commit.assert_called_once()
