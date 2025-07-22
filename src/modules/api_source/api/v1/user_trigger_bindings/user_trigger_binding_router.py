@@ -17,7 +17,6 @@ v1_user_trigger_binding_router = APIRouter(
 @v1_user_trigger_binding_router.post(
     "/",
     response_model=UserTriggerBindingOut,
-    dependencies=[Depends(authenticate_user)],
     summary="Создание привязки триггера к пользователю",
     description="Создаёт новый привязки триггера к пользователю на основе входных данных."
 )
@@ -30,7 +29,6 @@ async def create_user_trigger_binding(data: UserTriggerBindingCreate,
 @v1_user_trigger_binding_router.get(
     "/{item_id}",
     response_model=UserTriggerBindingOut,
-    dependencies=[Depends(authenticate_user)],
     summary="Получение привязки триггера к пользователю по ID",
     description="Возвращает привязки триггера к пользователю по ID. Возвращает ошибку 404, если не найден."
 )
@@ -47,7 +45,6 @@ async def get_user_trigger_binding(
 @v1_user_trigger_binding_router.get(
     "/",
     response_model=list[UserTriggerBindingOut],
-    dependencies=[Depends(authenticate_user)],
     summary="Получение привязки триггера к пользователю по ID",
     description="Возвращает привязки триггера к пользователю по ID. Возвращает ошибку 404, если не найден."
 )
@@ -59,7 +56,6 @@ async def list_user_trigger_bindings(
 @v1_user_trigger_binding_router.put(
     "/{item_id}",
     response_model=UserTriggerBindingOut,
-    dependencies=[Depends(authenticate_user)],
     summary="Обновление привязки триггера к пользователю",
     description="Обновляет привязки триггера к пользователю по ID. Возвращает ошибку 404, если не найден."
 )
@@ -74,7 +70,6 @@ async def update_user_trigger_binding(
 
 @v1_user_trigger_binding_router.delete(
     "/{item_id}",
-    dependencies=[Depends(authenticate_user)],
     summary="Удаление привязки триггера к пользователю",
     description="Удаляет привязки триггера к пользователю по ID. Возвращает ошибку 404, если не найден."
 )

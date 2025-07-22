@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 
-from src.modules.api_source.api.v1.notifications.crud_notification_template import v1_notification_router
+from src.modules.api_source.api.v1.notifications.notification_template_router import v1_notification_router
 from src.modules.api_source.api.v1.source.api_source_router.crud_source import v1_api_source
-from src.modules.api_source.api.v1.trigger.crud_trigger import v1_trigger_router
-from src.modules.api_source.api.v1.user_trigger_bindings.crud_user_trigger_binding import v1_user_trigger_binding_router
+from src.modules.api_source.api.v1.trigger.trigger_router import v1_trigger_router
+from src.modules.api_source.api.v1.user_trigger_bindings.user_trigger_binding_router import v1_user_trigger_binding_router
 from src.modules.auth.api.v1.auth_router import v1_auth
 from src.modules.auth.exceptions_handle.stream_exceptions_handlers import validation_exception_handler, \
     http_exception_handler, generic_exception_handler

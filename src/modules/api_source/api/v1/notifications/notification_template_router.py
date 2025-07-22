@@ -16,7 +16,6 @@ v1_notification_router = APIRouter(
 
 @v1_notification_router.post(
     "/", response_model=NotificationTemplateOut,
-    dependencies=[Depends(verify_superuser)],
     summary="Создание notification template",
     description="Создаёт новый notification template на основе входных данных."
 )
@@ -29,7 +28,6 @@ async def create_notification_template(
 @v1_notification_router.get(
     "/{item_id}",
     response_model=NotificationTemplateOut,
-    dependencies=[Depends(verify_superuser)],
     summary="Получение notification template по ID",
     description="Возвращает notification template по ID. Возвращает ошибку 404, если не найден."
 )
@@ -45,7 +43,6 @@ async def get_notification_template(
 @v1_notification_router.get(
     "/",
     response_model=list[NotificationTemplateOut],
-    dependencies=[Depends(verify_superuser)],
     summary="Получение notification template по ID",
     description="Возвращает notification template по ID. Возвращает ошибку 404, если не найден."
 )
@@ -57,7 +54,6 @@ async def list_notification_templates(
 @v1_notification_router.put(
     "/{item_id}",
     response_model=NotificationTemplateOut,
-    dependencies=[Depends(verify_superuser)],
     summary="Обновление notification template",
     description="Обновляет notification template по ID. Возвращает ошибку 404, если не найден."
 )
@@ -73,7 +69,6 @@ async def update_notification_template(
 
 @v1_notification_router.delete(
     "/{item_id}",
-    dependencies=[Depends(verify_superuser)],
     summary="Удаление notification template",
     description="Удаляет notification template по ID. Возвращает ошибку 404, если не найден."
 )
