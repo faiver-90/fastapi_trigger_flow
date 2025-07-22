@@ -74,7 +74,7 @@ class UserRepository:
     #     await self.session.commit()
     #     return await self.get_by_fields(id=user_id)
 
-    async def create(self, user_data: UserCreateSchema, hashed_password: str) -> User:
+    async def create(self, user_data: dict, hashed_password: str) -> User:
         """
         Создание нового пользователя.
 
@@ -86,8 +86,7 @@ class UserRepository:
             User: Созданный пользователь.
         """
         user = User(
-            username=user_data.username,
-            email=user_data.email,
+            **user_data,
             hashed_password=hashed_password
         )
         self.session.add(user)

@@ -4,8 +4,8 @@ from pydantic import BaseModel, EmailStr, Field
 
 
 class AuthInSchema(BaseModel):
-    password: str
     username: str
+    password: str
 
 
 class AuthOutSchema(BaseModel):
@@ -17,6 +17,7 @@ class UserCreateSchema(BaseModel):
     username: str = Field(min_length=3, max_length=150)
     email: EmailStr
     password: str = Field(min_length=6)
+    is_superuser: bool | None = False
 
 
 class UserOutSchema(BaseModel):

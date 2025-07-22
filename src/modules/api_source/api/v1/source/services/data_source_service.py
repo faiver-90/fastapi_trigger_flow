@@ -1,5 +1,5 @@
-from src.modules.api_source.repositories.data_source_repo import DataSourceRepo
-from src.modules.api_source.api.v1.source.schemas import DataSourceCreate, DataSourceUpdate
+from src.modules.api_source.api.v1.source.data_source_repo import DataSourceRepo
+from src.modules.api_source.api.v1.source.api_source_schemas import DataSourceCreate, DataSourceUpdate
 from src.shared.services.fernet_service import FernetService
 
 

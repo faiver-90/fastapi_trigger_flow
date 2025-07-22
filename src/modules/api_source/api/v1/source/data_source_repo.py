@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 from typing import Optional
 
-from src.modules.api_source.api.v1.source.schemas import DataSourceCreate, DataSourceUpdate
+from src.modules.api_source.api.v1.source.api_source_schemas import DataSourceCreate, DataSourceUpdate
 from src.shared.db.models.api_data_source import DataSource
 
 

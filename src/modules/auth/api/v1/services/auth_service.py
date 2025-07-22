@@ -98,4 +98,4 @@ class AuthService:
             raise ValueError("User with this email or username already exists")
 
         hashed_password = pwd_context.hash(data.password)
-        return await self.user_repo.create(data, hashed_password)
+        return await self.user_repo.create(data.dict(exclude='password'), hashed_password)

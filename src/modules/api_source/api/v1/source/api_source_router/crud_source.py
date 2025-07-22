@@ -1,10 +1,13 @@
 from fastapi import Depends, HTTPException
 
-from src.modules.api_source.api.v1.source.deps.auth_dependencies import authenticate_user
-from src.modules.api_source.api.v1.source.schemas import DataSourceOut, DataSourceCreate, DataSourceUpdate
-from src.modules.api_source.api.v1.source.deps.get_service import get_data_source_service
+from src.shared.deps.auth_dependencies import authenticate_user
+from src.modules.api_source.api.v1.source.api_source_schemas import DataSourceOut, DataSourceCreate, DataSourceUpdate
+from src.modules.api_source.api.v1.source.get_service import get_data_source_service
 from src.modules.api_source.api.v1.source.services.data_source_service import CRUDDataSourceService
-from src.modules.api_source.configs.api_source_router_conf import v1_api_source
+
+from fastapi import APIRouter
+
+v1_api_source = APIRouter(prefix="/crud_api_sources", tags=["CRUD API Sources"])
 
 
 @v1_api_source.post(
