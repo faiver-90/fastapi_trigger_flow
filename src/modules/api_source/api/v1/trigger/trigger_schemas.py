@@ -3,8 +3,8 @@ from pydantic import BaseModel, Field
 
 class TriggerBase(BaseModel):
     name: str = Field(..., max_length=255)
-    condition: str
-    description: str | None = Field(None, max_length=512)
+    condition: dict
+    user_id: int
 
 
 class TriggerCreate(TriggerBase):
@@ -13,8 +13,8 @@ class TriggerCreate(TriggerBase):
 
 class TriggerUpdate(BaseModel):
     name: str | None = Field(None, max_length=255)
-    condition: str | None
-    description: str | None = Field(None, max_length=512)
+    condition: dict
+    user_id: int
 
 
 class TriggerOut(TriggerBase):

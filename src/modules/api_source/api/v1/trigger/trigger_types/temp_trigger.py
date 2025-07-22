@@ -27,7 +27,11 @@ class TempParams(BaseModel):
 class TempTrigger(TriggerBaseClass):
     def __call__(self, payload: dict, params: dict) -> bool:
         p = TempParams(**params)
-        return OPERATOR_FUNC[p.op](payload.get("temp", 0), p.temp)
+        temperature = payload.get("temp")
+        if not temperature:
+            raise ValueError('Error payload from service')
+
+        return OPERATOR_FUNC[p.op](temperature, p.temp)
 
     @classmethod
     def describe(cls):
@@ -39,8 +43,8 @@ class TempTrigger(TriggerBaseClass):
 #
 # trigger = TempTrigger()
 #
-# payload = {"temp": 44}  # допустим, сейчас 28 градусов
-# params = {"temp": 30, "op": ">"}  # условие: "если температура ниже 30"
+# payload = {"temp": 30}  # допустим, сейчас 28 градусов
+# params = {"temp": 30, "op": "="}  # условие: "если температура ниже 30"
 #
 # result = trigger(payload, params)
 # print(result)  # → True

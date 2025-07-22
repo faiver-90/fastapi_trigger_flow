@@ -1,4 +1,4 @@
-from sqlalchemy import String, Text, Integer
+from sqlalchemy import String, Integer, JSON
 from sqlalchemy.orm import mapped_column, Mapped
 
 from src.shared.db.base import Base
@@ -9,5 +9,5 @@ class Trigger(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    condition: Mapped[str] = mapped_column(Text, nullable=False)
+    condition: Mapped[dict] = mapped_column(JSON, nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, nullable=False)

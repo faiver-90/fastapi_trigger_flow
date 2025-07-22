@@ -1,11 +1,13 @@
 from typing import AsyncGenerator
+from contextlib import contextmanager
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from sqlalchemy.orm import sessionmaker
 
-from src.shared.db.engine import engine
+from src.shared.db.engine import async_engine, sync_engine
 
 AsyncSessionLocal = async_sessionmaker(
-    bind=engine,
+    bind=async_engine,
     expire_on_commit=False,
     autoflush=False,
     autocommit=False,
@@ -15,3 +17,14 @@ AsyncSessionLocal = async_sessionmaker(
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
+
+
+@contextmanager
+def get_sync_session():
+    """Контекстный менеджер для синхронной сессии."""
+    SessionLocal = sessionmaker(bind=sync_engine)
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

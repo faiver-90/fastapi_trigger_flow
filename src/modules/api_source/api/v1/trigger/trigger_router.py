@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, APIRouter
 
 from src.modules.api_source.api.v1.trigger.trigger_types.registered_trigger import TRIGGER_REGISTRY
-from src.shared.deps.auth_dependencies import verify_superuser
+from src.shared.deps.auth_dependencies import authenticate_user
 from src.modules.api_source.api.v1.trigger.get_trigger_service import get_trigger_service
 from src.modules.api_source.api.v1.trigger.trigger_schemas import TriggerCreate, TriggerOut, TriggerUpdate
 from src.modules.api_source.api.v1.trigger.trigger_service import CRUDTriggerService
@@ -30,7 +30,7 @@ async def list_trigger_types():
 
 @v1_trigger_router.post(
     "/", response_model=TriggerOut,
-    dependencies=[Depends(verify_superuser)],
+    dependencies=[Depends(authenticate_user)],
     summary="Создание триггера",
     description="Создаёт новый триггера на основе входных данных."
 )
@@ -41,7 +41,7 @@ async def create_trigger(data: TriggerCreate, service: CRUDTriggerService = Depe
 @v1_trigger_router.get(
     "/{item_id}",
     response_model=TriggerOut,
-    dependencies=[Depends(verify_superuser)],
+    dependencies=[Depends(authenticate_user)],
     summary="Получение триггера по ID",
     description="Возвращает триггера по ID. Возвращает ошибку 404, если не найден."
 )
@@ -54,7 +54,7 @@ async def get_trigger(item_id: int, service: CRUDTriggerService = Depends(get_tr
 
 @v1_trigger_router.get(
     "/", response_model=list[TriggerOut],
-    dependencies=[Depends(verify_superuser)],
+    dependencies=[Depends(authenticate_user)],
     summary="Получение триггера по ID",
     description="Возвращает триггера по ID. Возвращает ошибку 404, если не найден."
 )
@@ -65,7 +65,7 @@ async def list_triggers(service: CRUDTriggerService = Depends(get_trigger_servic
 @v1_trigger_router.put(
     "/{item_id}",
     response_model=TriggerOut,
-    dependencies=[Depends(verify_superuser)],
+    dependencies=[Depends(authenticate_user)],
     summary="Обновление триггера",
     description="Обновляет триггера по ID. Возвращает ошибку 404, если не найден."
 )
@@ -78,7 +78,7 @@ async def update_trigger(item_id: int, data: TriggerUpdate, service: CRUDTrigger
 
 @v1_trigger_router.delete(
     "/{item_id}",
-    dependencies=[Depends(verify_superuser)],
+    dependencies=[Depends(authenticate_user)],
     summary="Удаление триггера",
     description="Удаляет триггера по ID. Возвращает ошибку 404, если не найден.")
 async def delete_trigger(item_id: int, service: CRUDTriggerService = Depends(get_trigger_service)):
