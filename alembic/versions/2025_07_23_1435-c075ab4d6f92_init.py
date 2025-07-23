@@ -1,8 +1,8 @@
-"""create users
+"""init
 
-Revision ID: 0f9e53e5c0bc
+Revision ID: c075ab4d6f92
 Revises: 
-Create Date: 2025-07-22 09:11:58.963314
+Create Date: 2025-07-23 14:35:04.854019
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '0f9e53e5c0bc'
+revision: str = 'c075ab4d6f92'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,28 +30,19 @@ def upgrade() -> None:
     sa.Column('source_key', sa.String(length=255), server_default='default_key', nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('notification_templates',
+    op.create_table('user_notification_bindings',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=255), nullable=False),
-    sa.Column('body', sa.Text(), nullable=False),
-    sa.Column('channel', sa.String(length=50), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('triggers',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=False),
-    sa.Column('condition', sa.Text(), nullable=False),
-    sa.Column('description', sa.String(length=512), nullable=True),
+    sa.Column('user_trigger_id', sa.Integer(), nullable=False),
+    sa.Column('notification_type', sa.ARRAY(sa.String()), nullable=False),
+    sa.Column('notification_config', sa.JSON(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user_trigger_bindings',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('trigger_type', sa.String(), nullable=False),
+    sa.Column('trigger_params', sa.JSON(), nullable=True),
     sa.Column('data_source_id', sa.Integer(), nullable=False),
-    sa.Column('trigger_id', sa.Integer(), nullable=False),
-    sa.Column('template_id', sa.Integer(), nullable=False),
-    sa.Column('is_active', sa.Boolean(), server_default='true', nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -85,7 +76,6 @@ def downgrade() -> None:
     op.drop_table('refresh_tokens')
     op.drop_table('users')
     op.drop_table('user_trigger_bindings')
-    op.drop_table('triggers')
-    op.drop_table('notification_templates')
+    op.drop_table('user_notification_bindings')
     op.drop_table('data_sources')
     # ### end Alembic commands ###

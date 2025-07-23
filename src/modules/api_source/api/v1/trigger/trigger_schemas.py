@@ -1,10 +1,13 @@
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
 class TriggerBase(BaseModel):
-    name: str = Field(..., max_length=255)
-    condition: dict
     user_id: int
+    trigger_type: str
+    trigger_params: dict[str, Any] | None = Field(default_factory=dict)
+    data_source_id: int
 
 
 class TriggerCreate(TriggerBase):
@@ -12,9 +15,8 @@ class TriggerCreate(TriggerBase):
 
 
 class TriggerUpdate(BaseModel):
-    name: str | None = Field(None, max_length=255)
-    condition: dict
-    user_id: int
+    trigger_params: dict[str, Any] | None = None
+    data_source_id: int | None = None
 
 
 class TriggerOut(TriggerBase):

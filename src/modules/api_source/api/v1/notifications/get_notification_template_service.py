@@ -1,5 +1,0 @@
-from src.modules.api_source.api.v1.notifications.notification_template_repo import NotificationTemplateRepo
-from src.modules.api_source.api.v1.notifications.notification_template_service import CRUDNotificationTemplateService
-from src.shared.services.base_get_service import base_get_service
-
-get_notification_template_service = base_get_service(CRUDNotificationTemplateService, NotificationTemplateRepo)
