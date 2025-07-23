@@ -13,7 +13,7 @@ class NotificationTemplateCreate(NotificationTemplateBase):
 
 class NotificationTemplateUpdate(BaseModel):
     title: str | None = Field(None, max_length=255)
-    body: str | None
+    body: str | None = Field(None, max_length=50)
     channel: str | None = Field(None, max_length=50)
 
 

@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException
 
 from src.shared.deps.auth_dependencies import authenticate_user
 from src.modules.api_source.api.v1.source.api_source_schemas import DataSourceOut, DataSourceCreate, DataSourceUpdate
-from src.modules.api_source.api.v1.source.get_service import get_data_source_service
+from src.modules.api_source.api.v1.source.get_source_service import get_data_source_service
 from src.modules.api_source.api.v1.source.services.data_source_service import CRUDDataSourceService
 
 from fastapi import APIRouter
