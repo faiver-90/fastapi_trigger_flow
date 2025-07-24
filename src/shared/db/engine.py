@@ -13,5 +13,13 @@ host = os.getenv('POSTGRES_HOST', 'db')
 SYNC_DATABASE_URL = os.getenv('SYNC_DATABASE_URL')
 DATABASE_URL = f"postgresql+asyncpg://{user}:{pw}@{host}:{port}/{db_name}"
 
-async_engine = create_async_engine(DATABASE_URL, echo=True, future=True)
+async_engine = create_async_engine(DATABASE_URL,
+                                   echo=True,
+                                   future=True,
+                                   pool_size=20,
+                                   max_overflow=10,
+                                   pool_timeout=30,
+                                   pool_recycle=1800,
+                                   pool_pre_ping=True
+                                   )
 sync_engine = create_engine(SYNC_DATABASE_URL, echo=True)

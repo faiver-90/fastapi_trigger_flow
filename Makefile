@@ -36,3 +36,7 @@ re-all:
 	docker system prune -af --volumes
 	docker-compose build --no-cache
 	docker-compose up -d --force-recreate
+
+.PHONY: re-create
+re-create:
+	@docker compose up -d --force-recreate
