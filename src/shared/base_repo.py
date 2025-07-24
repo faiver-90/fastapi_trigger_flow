@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from typing import TypeVar, Generic, Type, Optional
+from typing import TypeVar, Generic, Type, Optional, Any
 
 ModelType = TypeVar("ModelType")
 
@@ -19,6 +19,10 @@ class BaseRepository(Generic[ModelType]):
         await self.session.commit()
         await self.session.refresh(obj)
         return obj
+
+    async def add_all(self, objects: list[Any]):
+        self.session.add_all(objects)
+        await self.session.flush()
 
     async def get(self, obj_id: int) -> Optional[ModelType]:
         result = await self.session.execute(select(self.model).where(self.model.id == obj_id))

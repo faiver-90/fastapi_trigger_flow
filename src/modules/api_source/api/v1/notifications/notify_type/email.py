@@ -1,7 +1,7 @@
-from src.modules.api_source.api.v1.notifications.base_notify_class import NotificationBaseClass
+from src.modules.api_source.api.v1.notifications.base_type_notify_class import BaseTypeNotificationClass
 
 
-class EmailNotification(NotificationBaseClass):
+class EmailNotification(BaseTypeNotificationClass):
     async def send(self, payload, config):
         print(f'Notify email with payload {payload}, config {config}')
 

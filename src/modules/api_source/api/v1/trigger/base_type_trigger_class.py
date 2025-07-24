@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class TriggerBaseClass(ABC):
+class BaseTypeTriggerClass(ABC):
     @abstractmethod
     def __call__(self, payload: dict, params: dict) -> bool: ...
 

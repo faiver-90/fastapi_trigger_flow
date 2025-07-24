@@ -2,8 +2,9 @@ from fastapi import Depends, HTTPException, APIRouter
 
 from src.modules.api_source.api.v1.trigger.registered_trigger import TRIGGER_REGISTRY
 from src.modules.api_source.api.v1.trigger.get_trigger_service import get_trigger_service
-from src.modules.api_source.api.v1.trigger.trigger_schemas import TriggerCreate, TriggerOut, TriggerUpdate
-from src.modules.api_source.api.v1.trigger.trigger_service import CRUDTriggerService
+from src.modules.api_source.api.v1.trigger.trigger_schemas import TriggerCreate, TriggerOut, TriggerUpdate, \
+    BulkTriggerCreate
+from src.modules.api_source.api.v1.trigger.trigger_service import TriggerService
 
 v1_trigger_router = APIRouter(
     prefix="/trigger",
@@ -29,11 +30,20 @@ async def list_trigger_types():
 
 
 @v1_trigger_router.post(
+    "/bulk-create",
+    summary="Создание триггеров с уведомлениями",
+    description="Создает множество триггеров и уведомлений для них в одном запросе."
+)
+async def bulk_create_trigger(data: BulkTriggerCreate, service: TriggerService = Depends(get_trigger_service)):
+    return await service.bulk_create(data)
+
+
+@v1_trigger_router.post(
     "/", response_model=TriggerOut,
     summary="Создание триггера",
     description="Создаёт новый триггера на основе входных данных."
 )
-async def create_trigger(data: TriggerCreate, service: CRUDTriggerService = Depends(get_trigger_service)):
+async def create_trigger(data: TriggerCreate, service: TriggerService = Depends(get_trigger_service)):
     return await service.create(data.dict())
 
 
@@ -43,7 +53,7 @@ async def create_trigger(data: TriggerCreate, service: CRUDTriggerService = Depe
     summary="Получение триггера по ID",
     description="Возвращает триггера по ID. Возвращает ошибку 404, если не найден."
 )
-async def get_trigger(item_id: int, service: CRUDTriggerService = Depends(get_trigger_service)):
+async def get_trigger(item_id: int, service: TriggerService = Depends(get_trigger_service)):
     obj = await service.get(item_id)
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
@@ -55,7 +65,7 @@ async def get_trigger(item_id: int, service: CRUDTriggerService = Depends(get_tr
     summary="Получение триггера по ID",
     description="Возвращает триггера по ID. Возвращает ошибку 404, если не найден."
 )
-async def list_triggers(service: CRUDTriggerService = Depends(get_trigger_service)):
+async def list_triggers(service: TriggerService = Depends(get_trigger_service)):
     return await service.list()
 
 
@@ -65,7 +75,7 @@ async def list_triggers(service: CRUDTriggerService = Depends(get_trigger_servic
     summary="Обновление триггера",
     description="Обновляет триггера по ID. Возвращает ошибку 404, если не найден."
 )
-async def update_trigger(item_id: int, data: TriggerUpdate, service: CRUDTriggerService = Depends(get_trigger_service)):
+async def update_trigger(item_id: int, data: TriggerUpdate, service: TriggerService = Depends(get_trigger_service)):
     obj = await service.update(item_id, data.dict(exclude_unset=True))
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
@@ -76,7 +86,7 @@ async def update_trigger(item_id: int, data: TriggerUpdate, service: CRUDTrigger
     "/{item_id}",
     summary="Удаление триггера",
     description="Удаляет триггера по ID. Возвращает ошибку 404, если не найден.")
-async def delete_trigger(item_id: int, service: CRUDTriggerService = Depends(get_trigger_service)):
+async def delete_trigger(item_id: int, service: TriggerService = Depends(get_trigger_service)):
     deleted = await service.delete(item_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Not found")

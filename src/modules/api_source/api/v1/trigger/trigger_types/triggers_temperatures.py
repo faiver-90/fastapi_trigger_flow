@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 import operator
 
-from src.modules.api_source.api.v1.trigger.base_trigger_class import TriggerBaseClass
+from src.modules.api_source.api.v1.trigger.base_type_trigger_class import BaseTypeTriggerClass
 
 
 class Operator(str, Enum):
@@ -24,7 +24,7 @@ class TempParams(BaseModel):
     op: Operator
 
 
-class TemperatureTrigger(TriggerBaseClass):
+class TemperatureTrigger(BaseTypeTriggerClass):
     def __call__(self, payload: dict, params: dict) -> bool:
         p = TempParams(**params)
         temperature = payload.get("temp")

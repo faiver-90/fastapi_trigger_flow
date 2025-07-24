@@ -1,13 +1,5 @@
-import asyncio
-
 import httpx
 from typing import Any, Dict, List, Optional
-
-from sqlalchemy import select
-
-from src.shared.db import DataSource, Trigger
-from src.shared.db.session import get_sync_session
-from src.shared.services.fernet_service import FernetService
 
 BASE_URL = "https://api.openweathermap.org"
 

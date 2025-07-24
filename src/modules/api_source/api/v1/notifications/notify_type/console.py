@@ -1,7 +1,7 @@
-from src.modules.api_source.api.v1.notifications.base_notify_class import NotificationBaseClass
+from src.modules.api_source.api.v1.notifications.base_type_notify_class import BaseTypeNotificationClass
 
 
-class ConsoleNotification(NotificationBaseClass):
+class ConsoleNotification(BaseTypeNotificationClass):
     async def send(self, payload: dict, config: dict):
         print(f'Notify console with payload {payload}, config {config}')
 

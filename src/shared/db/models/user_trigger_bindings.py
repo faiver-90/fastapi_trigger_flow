@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.shared.db import Base
+from src.shared.db.base import Base
 
 
 class UserTriggerBinding(Base):

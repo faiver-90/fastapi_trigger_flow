@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, JSON, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.shared.db import Base
+from src.shared.db.base import Base
 
 
 class UserNotificationBinding(Base):
