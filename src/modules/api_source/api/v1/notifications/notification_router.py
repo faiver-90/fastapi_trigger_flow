@@ -5,13 +5,29 @@ from src.modules.api_source.api.v1.notifications.get_notification_service import
 from src.modules.api_source.api.v1.notifications.notification_schemas import NotificationOut, \
     NotificationCreate, NotificationUpdate
 from src.modules.api_source.api.v1.notifications.notification_service import CRUDNotificationService
-from src.shared.deps.auth_dependencies import authenticate_user
+from src.modules.api_source.api.v1.notifications.notifications_registry import NOTIFY_REGISTRY
 
 v1_notification_router = APIRouter(
     prefix="/notification",
     tags=["Notification"],
     # dependencies=[Depends(authenticate_user)]
 )
+
+
+@v1_notification_router.get(
+    "/list_types",
+    dependencies=[],
+    summary="Список доступных типов уведомлений",
+    description="Возвращает список всех зарегистрированных типов уведомлений и схемы параметров для каждого."
+)
+async def list_notify_types():
+    return [
+        {
+            "name": name,
+            **notify.describe()
+        }
+        for name, notify in NOTIFY_REGISTRY.items()
+    ]
 
 
 @v1_notification_router.post(

@@ -10,6 +10,5 @@ class DataSource(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    credentials: Mapped[dict] = mapped_column(JSON, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     source_key: Mapped[str] = mapped_column(String(255), nullable=False, server_default='default_key')

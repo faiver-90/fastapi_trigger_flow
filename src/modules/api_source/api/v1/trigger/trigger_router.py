@@ -1,7 +1,6 @@
 from fastapi import Depends, HTTPException, APIRouter
 
-from src.modules.api_source.api.v1.trigger.trigger_types.registered_trigger import TRIGGER_REGISTRY
-from src.shared.deps.auth_dependencies import authenticate_user
+from src.modules.api_source.api.v1.trigger.registered_trigger import TRIGGER_REGISTRY
 from src.modules.api_source.api.v1.trigger.get_trigger_service import get_trigger_service
 from src.modules.api_source.api.v1.trigger.trigger_schemas import TriggerCreate, TriggerOut, TriggerUpdate
 from src.modules.api_source.api.v1.trigger.trigger_service import CRUDTriggerService

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 import operator
 
-from src.modules.api_source.api.v1.trigger.trigger_types.base_trigger_class import TriggerBaseClass
+from src.modules.api_source.api.v1.trigger.base_trigger_class import TriggerBaseClass
 
 
 class Operator(str, Enum):
