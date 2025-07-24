@@ -10,7 +10,7 @@ from src.shared.deps.auth_dependencies import authenticate_user
 v1_notification_router = APIRouter(
     prefix="/notification",
     tags=["Notification"],
-    dependencies=[Depends(authenticate_user)]
+    # dependencies=[Depends(authenticate_user)]
 )
 
 
