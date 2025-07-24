@@ -27,7 +27,10 @@ class TriggerService(BaseCRUDService[TriggerRepo]):
     @staticmethod
     def _build_triggers(data: BulkTriggerCreate) -> list[UserTriggerBinding]:
         return [
-            UserTriggerBinding(**t.model_dump(exclude={"notifications"}), user_id=data.user_id, data_source_id=data.data_source_id)
+            UserTriggerBinding(
+                **t.model_dump(exclude={"notifications"}),
+                user_id=data.user_id,
+                data_source_id=data.data_source_id)
             for t in data.triggers
         ]
 
