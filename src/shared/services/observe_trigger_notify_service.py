@@ -1,6 +1,4 @@
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from collections import defaultdict
 
 from src.shared.db import UserTriggerBinding, UserNotificationBinding
 from src.modules.api_source.api.v1.trigger.trigger_registry import TRIGGER_REGISTRY
@@ -11,12 +9,48 @@ from collections import defaultdict
 
 
 class TriggerExecutorService:
+    """
+    Сервис для обработки пользовательских триггеров и отправки уведомлений на основе входящих данных от внешних
+    источников (payloads).
+
+    Основная задача сервиса — найти все активные триггеры, связанные с указанными источниками данных (data_source_id),
+    проверить выполнение условий триггеров на входящих данных и при срабатывании триггера инициировать соответствующие
+     уведомления.
+
+    Атрибуты:
+        session (AsyncSession): асинхронная сессия SQLAlchemy для доступа к базе данных.
+    """
     def __init__(self, session: AsyncSession):
         self.session = session
 
     async def run_for_all_sources(self, payloads: dict[int, dict]):
         """
-        payloads: {data_source_id: payload}
+        Запускает обработку для всех указанных источников данных.
+
+        Args:
+            payloads (dict[int, dict]): словарь вида {data_source_id: payload}, где payload — входные данные,
+                поступившие от соответствующего внешнего API.
+
+        Пропускает источники, по которым отсутствуют триггеры, или для которых не передан payload.
+        """
+        rows = await self._load_triggers_with_notifications(payloads)
+        grouped_by_source = self._group_by_data_source(rows)
+
+        for data_source_id, trigger_items in grouped_by_source.items():
+            payload = payloads.get(data_source_id)
+            if not payload:
+                continue
+            await self._run_for_one_source(trigger_items, payload)
+
+    async def _load_triggers_with_notifications(self, payloads: dict[int, dict]):
+        """
+        Выполняет SQL-запрос, объединяющий триггеры и связанные с ними уведомления для всех указанных источников.
+
+        Args:
+            payloads (dict[int, dict]): карта источников и данных.
+
+        Returns:
+            list[tuple[UserTriggerBinding, UserNotificationBinding]]: результат запроса.
         """
         stmt = (
             select(UserTriggerBinding, UserNotificationBinding)
@@ -24,33 +58,73 @@ class TriggerExecutorService:
             .where(UserTriggerBinding.data_source_id.in_(payloads.keys()))
         )
         result = await self.session.execute(stmt)
-        rows = result.all()
+        return result.all()
 
-        trigger_map: dict[int, list[tuple[UserTriggerBinding, UserNotificationBinding]]] = defaultdict(list)
+    @staticmethod
+    def _group_by_data_source(rows: list[tuple[UserTriggerBinding, UserNotificationBinding]]
+                              ) -> dict[int, list[tuple[UserTriggerBinding, UserNotificationBinding]]]:
+        """
+        Группирует триггеры и уведомления по data_source_id.
+
+        Args:
+            rows: результат JOIN-запроса из БД.
+
+        Returns:
+            Словарь: ключ — data_source_id, значение — список пар (триггер, уведомление).
+        """
+        trigger_map = defaultdict(list)
         for trigger, notification in rows:
             trigger_map[trigger.data_source_id].append((trigger, notification))
+        return trigger_map
 
-        for data_source_id, trigger_items in trigger_map.items():
-            payload = payloads.get(data_source_id)
-            if not payload:
+    async def _run_for_one_source(self,
+                                  trigger_items: list[tuple[UserTriggerBinding, UserNotificationBinding]],
+                                  payload: dict):
+        """
+        Обрабатывает триггеры и уведомления для одного источника данных.
+
+        Args:
+            trigger_items: список триггеров и их уведомлений.
+            payload: входные данные, полученные от источника.
+        """
+        grouped_triggers = self._group_notifications_by_trigger(trigger_items)
+
+        for trigger, notifications in grouped_triggers.items():
+            trigger_func = TRIGGER_REGISTRY.get(trigger.trigger_type)
+            if not trigger_func:
                 continue
+            try:
+                if trigger_func(payload, trigger.trigger_params):
+                    await self._notify(notifications, payload)
+            except Exception as e:
+                print(f"[!] Trigger error: {e}")
 
-            # группируем триггеры
-            grouped_triggers = defaultdict(list)
-            for trigger, notif in trigger_items:
-                grouped_triggers[trigger].append(notif)
+    @staticmethod
+    def _group_notifications_by_trigger(trigger_items: list[tuple[UserTriggerBinding, UserNotificationBinding]]
+                                        ) -> dict[UserTriggerBinding, list[UserNotificationBinding]]:
+        """
+        Группирует уведомления по триггерам.
 
-            for trigger, notifs in grouped_triggers.items():
-                trigger_func = TRIGGER_REGISTRY.get(trigger.trigger_type)
-                if not trigger_func:
-                    continue
-                try:
-                    if trigger_func(payload, trigger.trigger_params):
-                        await self._notify(notifs, payload)
-                except Exception as e:
-                    print(f"[!] Trigger error: {e}")
+        Args:
+            trigger_items: список пар (триггер, уведомление).
 
-    async def _notify(self, notifications: list[UserNotificationBinding], payload: dict):
+        Returns:
+            dict: {триггер: [уведомление, ...]}
+        """
+        grouped_triggers = defaultdict(list)
+        for trigger, notif in trigger_items:
+            grouped_triggers[trigger].append(notif)
+        return grouped_triggers
+
+    @staticmethod
+    async def _notify(notifications: list[UserNotificationBinding], payload: dict):
+        """
+        Отправляет уведомления, если триггер сработал.
+
+        Args:
+            notifications: список уведомлений, которые нужно отправить.
+            payload: исходные данные, по которым сработал триггер.
+        """
         for notif in notifications:
             for notif_type in notif.notification_type:
                 notifier = NOTIFY_REGISTRY.get(notif_type)
@@ -60,47 +134,3 @@ class TriggerExecutorService:
                     await notifier.send(payload, notif.notification_config or {})
                 except Exception as e:
                     print(f"[!] Notification error: {e}")
-
-
-p = {
-    "data_source_id": 1,
-    "user_id": 1,
-    "triggers": [
-        {
-            "trigger_type": "temp_trigger",
-            "trigger_params": {
-                "temp": "1",
-                "op": ">"
-            },
-            "notifications": [
-                {
-                    "notification_type": [
-                        "console"
-                    ],
-                    "notification_config": {
-                        "additionalProp1": {}
-                    }
-                }
-            ]
-        },
-        {
-            "trigger_type": "temp_trigger",
-            "trigger_params": {
-                "trigger_params": {
-                    "temp": "1",
-                    "op": ">"
-                }
-            },
-            "notifications": [
-                {
-                    "notification_type": [
-                        "console"
-                    ],
-                    "notification_config": {
-                        "additionalProp1": {}
-                    }
-                }
-            ]
-        },
-    ]
-}

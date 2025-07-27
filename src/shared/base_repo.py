@@ -22,7 +22,6 @@ class BaseRepository(Generic[ModelType]):
 
     async def add_all(self, objects: list[Any]):
         self.session.add_all(objects)
-        await self.session.flush()
 
     async def get(self, obj_id: int) -> Optional[ModelType]:
         result = await self.session.execute(select(self.model).where(self.model.id == obj_id))
