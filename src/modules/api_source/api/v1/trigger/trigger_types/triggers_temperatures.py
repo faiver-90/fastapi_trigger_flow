@@ -28,7 +28,7 @@ class TemperatureTrigger(BaseTypeTriggerClass):
     def __call__(self, payload: dict, params: dict) -> bool:
         p = TempParams(**params)
         temperature = payload.get("temp")
-        if not temperature:
+        if temperature is None:
             raise ValueError('Error payload from service')
 
         return OPERATOR_FUNC[p.op](temperature, p.temp)

@@ -1,15 +1,15 @@
 from fastapi import Depends, HTTPException
 
-from src.modules.api_source.api.v1.source.registered_source import SOURCE_REGISTRY
+from src.modules.api_source.api.v1.source.data_source_registry import DATA_SOURCE_REGISTRY
 from src.shared.deps.auth_dependencies import authenticate_user
 from src.modules.api_source.api.v1.source.api_source_schemas import DataSourceOut, DataSourceCreate, DataSourceUpdate
-from src.modules.api_source.api.v1.source.get_source_service import get_data_source_service
+from src.modules.api_source.api.v1.source.get_service import get_data_source_service
 from src.modules.api_source.api.v1.source.services.data_source_service import CRUDDataSourceService
 
 from fastapi import APIRouter
 
-v1_api_source = APIRouter(prefix="/crud_api_sources",
-                          tags=["CRUD API Sources"],
+v1_api_source = APIRouter(prefix="/api_sources",
+                          tags=["API Sources"],
                           # dependencies=[Depends(authenticate_user)]
                           )
 
@@ -23,9 +23,10 @@ v1_api_source = APIRouter(prefix="/crud_api_sources",
 async def list_source_types():
     return [
         {
-            "name": name,
+            "id": int(source_id),
+            "name": config['name'],
         }
-        for name in SOURCE_REGISTRY
+        for source_id, config in DATA_SOURCE_REGISTRY.items()
     ]
 
 

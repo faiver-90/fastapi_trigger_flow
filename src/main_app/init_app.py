@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.exceptions import RequestValidationError, HTTPException
 
 from src.modules.api_source.api.v1.notifications.notification_router import v1_notification_router
@@ -20,6 +20,22 @@ def get_app() -> FastAPI:
     )
     async def test_connection():
         return {"It's": "work"}
+
+    # ================================================
+    from sqlalchemy.ext.asyncio import AsyncSession
+    from src.shared.db.session import get_async_session
+    from fastapi import Body
+    @app_init.post('/run_for_source', tags=["Service"])
+    async def run_for_source(temp: int = Body(...), session: AsyncSession = Depends(get_async_session)):
+        from src.shared.services.observe_trigger_notify_service import TriggerExecutorService
+        service = TriggerExecutorService(session)
+        payloads = {
+            1: {
+                "temp": temp
+            }
+        }
+        await service.run_for_all_sources(payloads)
+        return {"result": "message send"}
 
     app_init.add_exception_handler(RequestValidationError, validation_exception_handler)
     app_init.add_exception_handler(HTTPException, http_exception_handler)

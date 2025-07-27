@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, APIRouter
 
-from src.modules.api_source.api.v1.notifications.get_notification_service import \
+from src.modules.api_source.api.v1.notifications.get_service import \
     get_notification_service
 from src.modules.api_source.api.v1.notifications.notification_schemas import NotificationOut, \
     NotificationCreate, NotificationUpdate
@@ -59,7 +59,7 @@ async def get_notification(
 @v1_notification_router.get(
     "/",
     response_model=list[NotificationOut],
-    summary="Получение notification по ID",
+    summary="Получение notification",
     description="Возвращает notification по ID. Возвращает ошибку 404, если не найден."
 )
 async def list_notification(

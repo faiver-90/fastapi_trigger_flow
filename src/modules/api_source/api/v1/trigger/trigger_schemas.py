@@ -34,7 +34,7 @@ class NotificationCreate(BaseModel):
 
 class TriggerWithNotificationsCreate(BaseModel):
     trigger_type: str
-    trigger_params: Dict[str, Any] = Field(default_factory=dict)
+    trigger_params: Dict[str, Any] = Field(default_factory=dict, description='Insert params here')
     notifications: List[NotificationCreate]
 
 

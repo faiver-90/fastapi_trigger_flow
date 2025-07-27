@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, APIRouter
 
-from src.modules.api_source.api.v1.trigger.registered_trigger import TRIGGER_REGISTRY
-from src.modules.api_source.api.v1.trigger.get_trigger_service import get_trigger_service
+from src.modules.api_source.api.v1.trigger.trigger_registry import TRIGGER_REGISTRY
+from src.modules.api_source.api.v1.trigger.get_service import get_trigger_service
 from src.modules.api_source.api.v1.trigger.trigger_schemas import TriggerCreate, TriggerOut, TriggerUpdate, \
     BulkTriggerCreate
 from src.modules.api_source.api.v1.trigger.trigger_service import TriggerService
@@ -62,7 +62,7 @@ async def get_trigger(item_id: int, service: TriggerService = Depends(get_trigge
 
 @v1_trigger_router.get(
     "/", response_model=list[TriggerOut],
-    summary="Получение триггера по ID",
+    summary="Получение триггеров",
     description="Возвращает триггера по ID. Возвращает ошибку 404, если не найден."
 )
 async def list_triggers(service: TriggerService = Depends(get_trigger_service)):
