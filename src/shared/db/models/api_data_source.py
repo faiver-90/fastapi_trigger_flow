@@ -9,7 +9,6 @@ class DataSource(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     source_key: Mapped[str] = mapped_column(String(255), nullable=False, server_default='default_key')
     data_source_id: Mapped[int] = mapped_column(Integer, nullable=False)
