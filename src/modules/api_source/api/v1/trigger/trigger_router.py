@@ -24,7 +24,7 @@ async def list_trigger_types():
     return [
         {
             "name": name,
-            "condition": trigger.describe()
+            "trigger_params": trigger.describe()
         }
         for name, trigger in TRIGGER_REGISTRY.items()
     ]

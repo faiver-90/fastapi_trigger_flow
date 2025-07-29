@@ -8,6 +8,6 @@ class CRUDDataSourceService(BaseCRUDService[DataSourceRepo]):
         super().__init__(repo)
         self.fernet = fernet
 
-    async def create(self, data):
-        data.source_key = self.fernet.encrypt_str(data.source_key)
-        return await super().create(data)
+    async def create(self, data: dict, user_id=None):
+        data['source_key'] = self.fernet.encrypt_str(data['source_key'])
+        return await super().create(data, user_id)
