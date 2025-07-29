@@ -30,15 +30,15 @@ async def list_notify_types():
     ]
 
 
-@v1_notification_router.post(
-    "/", response_model=NotificationOut,
-    summary="Создание notification",
-    description="Создаёт новый notification  на основе входных данных."
-)
-async def create_notification(
-        data: NotificationCreate,
-        service: CRUDNotificationService = Depends(get_notification_service)):
-    return await service.create(data.dict())
+# @v1_notification_router.post(
+#     "/", response_model=NotificationOut,
+#     summary="Создание notification",
+#     description="Создаёт новый notification  на основе входных данных."
+# )
+# async def create_notification(
+#         data: NotificationCreate,
+#         service: CRUDNotificationService = Depends(get_notification_service)):
+#     return await service.create(data.dict())
 
 
 @v1_notification_router.get(

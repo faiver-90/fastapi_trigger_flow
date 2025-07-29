@@ -38,13 +38,13 @@ async def bulk_create_trigger(data: BulkTriggerCreate, service: TriggerService =
     return await service.bulk_create(data)
 
 
-@v1_trigger_router.post(
-    "/", response_model=TriggerOut,
-    summary="Создание триггера",
-    description="Создаёт новый триггера на основе входных данных."
-)
-async def create_trigger(data: TriggerCreate, service: TriggerService = Depends(get_trigger_service)):
-    return await service.create(data.dict())
+# @v1_trigger_router.post(
+#     "/", response_model=TriggerOut,
+#     summary="Создание триггера",
+#     description="Создаёт новый триггера на основе входных данных."
+# )
+# async def create_trigger(data: TriggerCreate, service: TriggerService = Depends(get_trigger_service)):
+#     return await service.create(data.dict())
 
 
 @v1_trigger_router.get(
