@@ -5,6 +5,7 @@ from src.modules.api_source.api.v1.trigger.get_service import get_trigger_servic
 from src.modules.api_source.api.v1.trigger.trigger_schemas import TriggerCreate, TriggerOut, TriggerUpdate, \
     BulkTriggerCreate
 from src.modules.api_source.api.v1.trigger.trigger_service import TriggerService
+from src.shared.deps.auth_dependencies import authenticate_user
 
 v1_trigger_router = APIRouter(
     prefix="/trigger",
@@ -38,13 +39,16 @@ async def bulk_create_trigger(data: BulkTriggerCreate, service: TriggerService =
     return await service.bulk_create(data)
 
 
-# @v1_trigger_router.post(
-#     "/", response_model=TriggerOut,
-#     summary="Создание триггера",
-#     description="Создаёт новый триггера на основе входных данных."
-# )
-# async def create_trigger(data: TriggerCreate, service: TriggerService = Depends(get_trigger_service)):
-#     return await service.create(data.dict())
+@v1_trigger_router.post(
+    "/", response_model=TriggerOut,
+    summary="Создание триггера",
+    description="Создаёт новый триггера на основе входных данных."
+)
+async def create_trigger(data: TriggerCreate,
+                         service: TriggerService = Depends(get_trigger_service),
+                         user: dict = Depends(authenticate_user)):
+    user_id = data.user_id or int(user["sub"])
+    return await service.create(data.dict(), user_id)
 
 
 @v1_trigger_router.get(
@@ -53,8 +57,11 @@ async def bulk_create_trigger(data: BulkTriggerCreate, service: TriggerService =
     summary="Получение триггера по ID",
     description="Возвращает триггера по ID. Возвращает ошибку 404, если не найден."
 )
-async def get_trigger(item_id: int, service: TriggerService = Depends(get_trigger_service)):
-    obj = await service.get(item_id)
+async def get_trigger(item_id: int,
+                      service: TriggerService = Depends(get_trigger_service),
+                      user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    obj = await service.get(item_id, user_id)
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
     return obj
@@ -65,8 +72,10 @@ async def get_trigger(item_id: int, service: TriggerService = Depends(get_trigge
     summary="Получение триггеров",
     description="Возвращает триггера по ID. Возвращает ошибку 404, если не найден."
 )
-async def list_triggers(service: TriggerService = Depends(get_trigger_service)):
-    return await service.list()
+async def list_triggers(service: TriggerService = Depends(get_trigger_service),
+                        user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    return await service.list(user_id)
 
 
 @v1_trigger_router.put(
@@ -75,8 +84,12 @@ async def list_triggers(service: TriggerService = Depends(get_trigger_service)):
     summary="Обновление триггера",
     description="Обновляет триггера по ID. Возвращает ошибку 404, если не найден."
 )
-async def update_trigger(item_id: int, data: TriggerUpdate, service: TriggerService = Depends(get_trigger_service)):
-    obj = await service.update(item_id, data.dict(exclude_unset=True))
+async def update_trigger(item_id: int,
+                         data: TriggerUpdate,
+                         service: TriggerService = Depends(get_trigger_service),
+                         user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    obj = await service.update(item_id, data.dict(exclude_unset=True), user_id)
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
     return obj
@@ -86,8 +99,11 @@ async def update_trigger(item_id: int, data: TriggerUpdate, service: TriggerServ
     "/{item_id}",
     summary="Удаление триггера",
     description="Удаляет триггера по ID. Возвращает ошибку 404, если не найден.")
-async def delete_trigger(item_id: int, service: TriggerService = Depends(get_trigger_service)):
-    deleted = await service.delete(item_id)
+async def delete_trigger(item_id: int,
+                         service: TriggerService = Depends(get_trigger_service),
+                         user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    deleted = await service.delete(item_id, user_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Not found")
     return {"status": "deleted"}

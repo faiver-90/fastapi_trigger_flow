@@ -40,7 +40,10 @@ class TriggerService(BaseCRUDService[TriggerRepo]):
         notifications: list[UserNotificationBinding] = []
 
         for trigger, trigger_data in zip(triggers, data.triggers):
+
             for notif in trigger_data.notifications:
                 notif_data = notif.model_dump()
-                notifications.append(UserNotificationBinding(user_trigger_id=trigger.id, **notif_data))
+                notifications.append(UserNotificationBinding(user_trigger_id=trigger.id,
+                                                             user_id=data.user_id,
+                                                             **notif_data))
         return notifications

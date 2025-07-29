@@ -11,3 +11,4 @@ class UserNotificationBinding(Base):
     user_trigger_id: Mapped[int] = mapped_column(Integer, nullable=False)
     notification_type: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     notification_config: Mapped[dict] = mapped_column(JSON, nullable=True)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)

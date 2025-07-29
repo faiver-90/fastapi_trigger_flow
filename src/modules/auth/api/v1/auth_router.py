@@ -6,11 +6,20 @@ from src.modules.auth.api.v1.deps.get_auth_service import get_auth_service
 from src.modules.auth.api.v1.schemas import LoginResponseSchema, AuthInSchema, UserOutSchema, UserCreateSchema
 from src.modules.auth.api.v1.services.auth_service import AuthService
 from src.modules.auth.configs.log_conf import setup_auth_logger
+from src.shared.deps.auth_dependencies import authenticate_user
 
 v1_auth = APIRouter(prefix="/auth", tags=["Authentication, authorisation"])
 
 setup_auth_logger()
 auth_logger = logging.getLogger('auth')
+
+
+@v1_auth.get("/me", summary="Получить данные текущего пользователя")
+async def get_current_user(payload: dict = Depends(authenticate_user)):
+    return {
+        "user_id": payload.get("sub"),
+        "is_superuser": payload.get("is_superuser"),
+    }
 
 
 @v1_auth.post(

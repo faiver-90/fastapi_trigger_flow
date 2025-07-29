@@ -23,12 +23,23 @@ class BaseRepository(Generic[ModelType]):
     async def add_all(self, objects: list[Any]):
         self.session.add_all(objects)
 
-    async def get(self, obj_id: int) -> Optional[ModelType]:
-        result = await self.session.execute(select(self.model).where(self.model.id == obj_id))
+    async def get(self, obj_id: int, user_id: Optional[int] = None) -> Optional[ModelType]:
+        stmt = select(self.model).where(self.model.id == obj_id)
+
+        if user_id is not None and hasattr(self.model, "user_id"):
+            stmt = stmt.where(self.model.user_id == user_id, self.model.id == obj_id)
+
+        result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def list(self) -> list[ModelType]:
-        result = await self.session.execute(select(self.model))
+    async def list(self, user_id: Optional[int] = None) -> list[ModelType]:
+        stmt = select(self.model)
+
+        if user_id is not None and hasattr(self.model, "user_id"):
+            stmt = stmt.where(self.model.user_id == user_id)
+        print('user_id', stmt)
+
+        result = await self.session.execute(stmt)
         return result.scalars().all()
 
     async def update(self, obj_id: int, data: dict) -> Optional[ModelType]:
@@ -43,7 +54,7 @@ class BaseRepository(Generic[ModelType]):
         await self.session.refresh(obj)
         return obj
 
-    async def delete(self, obj_id: int) -> bool:
+    async def delete(self, obj_id: int, user_id) -> bool:
         obj = await self.get(obj_id)
         if not obj:
             return False

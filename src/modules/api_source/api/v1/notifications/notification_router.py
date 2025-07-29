@@ -6,6 +6,7 @@ from src.modules.api_source.api.v1.notifications.notification_schemas import Not
     NotificationCreate, NotificationUpdate
 from src.modules.api_source.api.v1.notifications.notification_service import CRUDNotificationService
 from src.modules.api_source.api.v1.notifications.notifications_registry import NOTIFY_REGISTRY
+from src.shared.deps.auth_dependencies import authenticate_user
 
 v1_notification_router = APIRouter(
     prefix="/notification",
@@ -30,15 +31,17 @@ async def list_notify_types():
     ]
 
 
-# @v1_notification_router.post(
-#     "/", response_model=NotificationOut,
-#     summary="Создание notification",
-#     description="Создаёт новый notification  на основе входных данных."
-# )
-# async def create_notification(
-#         data: NotificationCreate,
-#         service: CRUDNotificationService = Depends(get_notification_service)):
-#     return await service.create(data.dict())
+@v1_notification_router.post(
+    "/", response_model=NotificationOut,
+    summary="Создание notification",
+    description="Создаёт новый notification  на основе входных данных."
+)
+async def create_notification(
+        data: NotificationCreate,
+        service: CRUDNotificationService = Depends(get_notification_service),
+        user: dict = Depends(authenticate_user)):
+    user_id = data.user_id or int(user["sub"])
+    return await service.create(data.dict(), user_id)
 
 
 @v1_notification_router.get(
@@ -49,8 +52,10 @@ async def list_notify_types():
 )
 async def get_notification(
         item_id: int,
-        service: CRUDNotificationService = Depends(get_notification_service)):
-    obj = await service.get(item_id)
+        service: CRUDNotificationService = Depends(get_notification_service),
+        user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    obj = await service.get(item_id, user_id)
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
     return obj
@@ -63,8 +68,10 @@ async def get_notification(
     description="Возвращает notification по ID. Возвращает ошибку 404, если не найден."
 )
 async def list_notification(
-        service: CRUDNotificationService = Depends(get_notification_service)):
-    return await service.list()
+        service: CRUDNotificationService = Depends(get_notification_service),
+        user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    return await service.list(user_id=user_id)
 
 
 @v1_notification_router.put(
@@ -74,10 +81,12 @@ async def list_notification(
     description="Обновляет notification по ID. Возвращает ошибку 404, если не найден."
 )
 async def update_notification(
-        item_id: int, data: NotificationUpdate,
-        service: CRUDNotificationService = Depends(
-            get_notification_service)):
-    obj = await service.update(item_id, data.dict(exclude_unset=True))
+        item_id: int,
+        data: NotificationUpdate,
+        service: CRUDNotificationService = Depends(get_notification_service),
+        user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    obj = await service.update(item_id, data.dict(exclude_unset=True), user_id)
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
     return obj
@@ -90,8 +99,10 @@ async def update_notification(
 )
 async def delete_notification(
         item_id: int,
-        service: CRUDNotificationService = Depends(get_notification_service)):
-    deleted = await service.delete(item_id)
+        service: CRUDNotificationService = Depends(get_notification_service),
+        user: dict = Depends(authenticate_user)):
+    user_id = int(user["sub"])
+    deleted = await service.delete(item_id, user_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Not found")
     return {"status": "deleted"}
