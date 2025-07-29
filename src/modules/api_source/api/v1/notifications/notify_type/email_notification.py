@@ -32,11 +32,11 @@ class EmailNotification(BaseTypeNotificationClass):
         """
         recipient = config.get("email")
         if not recipient:
-            print("[!] Email не указан в config")
+            print("[!] Email is not specified in config")
             return
 
         # Шаблон письма внутри
-        subject = "Температурное оповещение"
+        subject = "Оповещение от trigger flow"
         body = f"{payload}, {config}"
 
         message = EmailMessage()
@@ -54,14 +54,14 @@ class EmailNotification(BaseTypeNotificationClass):
                 password=self.smtp_pass,
                 start_tls=True
             )
-            print(f"[+] Email отправлен: {recipient}")
+            print(f"[+] Email was send: {recipient}")
         except Exception as e:
-            print(f"[!] Ошибка при отправке email: {e}")
+            print(f"[!] Error sending email: {e}")
 
     def describe(self) -> dict:
         return {
-            "description": "Отправляет email при превышении температуры.",
-            "required_config": {
+            "description": "Отправляет email.",
+            "notification_config": {
                 "email": "Email получателя",
             }
         }
