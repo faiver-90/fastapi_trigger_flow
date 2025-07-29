@@ -49,3 +49,7 @@ async def verify_superuser(payload: dict = Depends(authenticate_user)):
             detail="User is not a superuser"
         )
     return payload
+
+
+async def get_user_id(user: dict = Depends(authenticate_user)) -> int:
+    return int(user["sub"])
