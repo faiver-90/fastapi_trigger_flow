@@ -7,7 +7,7 @@ class NotificationBase(BaseModel):
     user_trigger_id: int
     notification_type: list[str]
     user_id: int
-    # notification_config: dict[str, Any] | None = Field(default_factory=dict)
+    notification_config: dict[str, Any] | None = Field(default_factory=dict)
 
 
 class NotificationCreate(NotificationBase):

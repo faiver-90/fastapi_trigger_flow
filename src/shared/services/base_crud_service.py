@@ -8,8 +8,8 @@ class BaseCRUDService(Generic[RepoType]):
         self.repo = repo
 
     async def create(self, data, user_id=None):
-        if user_id:
-            data['user_id'] = user_id
+        if not data.get("user_id") or data["user_id"] == 0:
+            data["user_id"] = user_id
         return await self.repo.create(data)
 
     async def get(self, obj_id: int, user_id=None):

@@ -29,7 +29,7 @@ class TriggerOut(TriggerBase):
 
 class NotificationCreate(BaseModel):
     notification_type: List[str]
-    # notification_config: Dict[str, Any] = Field(default_factory=dict)
+    notification_config: Dict[str, Any] = Field(default_factory=dict)
 
 
 class TriggerWithNotificationsCreate(BaseModel):
