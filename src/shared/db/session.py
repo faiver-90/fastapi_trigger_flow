@@ -1,7 +1,7 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 from contextlib import contextmanager
 
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import sessionmaker
 
 from src.shared.db.engine import async_engine, sync_engine

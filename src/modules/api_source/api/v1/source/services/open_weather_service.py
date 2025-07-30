@@ -1,5 +1,6 @@
+from typing import Any
+
 import httpx
-from typing import Any, Dict, List, Optional
 
 BASE_URL = "https://api.openweathermap.org"
 
@@ -19,13 +20,13 @@ class OpenWeatherService:
         self.client = httpx.AsyncClient(timeout=10.0)
 
     async def get_current_weather(
-            self,
-            city: Optional[str] = None,
-            lat: Optional[float] = None,
-            lon: Optional[float] = None,
-            units: str = "metric",
-            lang: str = "en",
-    ) -> Dict[str, Any]:
+        self,
+        city: str | None = None,
+        lat: float | None = None,
+        lon: float | None = None,
+        units: str = "metric",
+        lang: str = "en",
+    ) -> dict[str, Any]:
         """
         Получить текущую погоду.
 
@@ -53,11 +54,11 @@ class OpenWeatherService:
         return resp.json()
 
     async def geocoding_reverse(
-            self,
-            lat: float,
-            lon: float,
-            limit: int = 5,
-    ) -> List[Dict[str, Any]]:
+        self,
+        lat: float,
+        lon: float,
+        limit: int = 5,
+    ) -> list[dict[str, Any]]:
         """
         Обратное геокодирование — по координатам возвращает названия городов.
         """

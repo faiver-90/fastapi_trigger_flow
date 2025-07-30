@@ -2,8 +2,12 @@ from datetime import datetime, timedelta
 
 from jose import jwt
 
-from src.modules.auth.configs.jwt_conf import SECRET_KEY, ALGORITHM, ACCESS_EXPIRE_MIN, \
-    REFRESH_EXPIRE_DAYS
+from src.modules.auth.configs.jwt_conf import (
+    ACCESS_EXPIRE_MIN,
+    ALGORITHM,
+    REFRESH_EXPIRE_DAYS,
+    SECRET_KEY,
+)
 
 
 def create_token(data: dict, expires_delta: timedelta) -> str:

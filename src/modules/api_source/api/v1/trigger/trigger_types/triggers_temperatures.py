@@ -1,9 +1,11 @@
+import operator
 from enum import Enum
+
 from pydantic import BaseModel
 
-import operator
-
-from src.modules.api_source.api.v1.trigger.base_type_trigger_class import BaseTypeTriggerClass
+from src.modules.api_source.api.v1.trigger.base_type_trigger_class import (
+    BaseTypeTriggerClass,
+)
 
 
 class Operator(str, Enum):
@@ -29,7 +31,7 @@ class TemperatureTrigger(BaseTypeTriggerClass):
         p = TempParams(**params)
         temperature = payload.get("temp")
         if temperature is None:
-            raise ValueError('Error payload from service')
+            raise ValueError("Error payload from service")
 
         return OPERATOR_FUNC[p.op](temperature, p.temp)
 
@@ -37,8 +39,10 @@ class TemperatureTrigger(BaseTypeTriggerClass):
     def describe(cls):
         return {
             "temp": "Число — температура в градусах",
-            "op": "Оператор сравнения: curr > temp,  curr < temp , curr = temp"
+            "op": "Оператор сравнения: curr > temp,  curr < temp , curr = temp",
         }
+
+
 #
 #
 # trigger = TempTrigger()

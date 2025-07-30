@@ -1,8 +1,11 @@
 from datetime import datetime
+
 import pytz
 
 
-def convert_utc_to_local(utc_timestamp: int, timezone_str: str = "Europe/Moscow") -> str:
+def convert_utc_to_local(
+    utc_timestamp: int, timezone_str: str = "Europe/Moscow"
+) -> str:
     """
     Переводит UTC timestamp в локальное время (по указанному часовому поясу).
 

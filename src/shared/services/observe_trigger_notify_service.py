@@ -1,11 +1,13 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.shared.db import UserTriggerBinding, UserNotificationBinding
-from src.modules.api_source.api.v1.trigger.trigger_registry import TRIGGER_REGISTRY
-from src.modules.api_source.api.v1.notifications.notifications_registry import NOTIFY_REGISTRY
+from collections import defaultdict
 
 from sqlalchemy import select
-from collections import defaultdict
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.modules.api_source.api.v1.notifications.notifications_registry import (
+    NOTIFY_REGISTRY,
+)
+from src.modules.api_source.api.v1.trigger.trigger_registry import TRIGGER_REGISTRY
+from src.shared.db import UserNotificationBinding, UserTriggerBinding
 
 
 class TriggerExecutorService:
@@ -20,6 +22,7 @@ class TriggerExecutorService:
     Атрибуты:
         session (AsyncSession): асинхронная сессия SQLAlchemy для доступа к базе данных.
     """
+
     def __init__(self, session: AsyncSession):
         self.session = session
 
@@ -52,17 +55,22 @@ class TriggerExecutorService:
         Returns:
             list[tuple[UserTriggerBinding, UserNotificationBinding]]: результат запроса.
         """
+        # TODO Перенести в REPO
         stmt = (
             select(UserTriggerBinding, UserNotificationBinding)
-            .join(UserNotificationBinding, UserNotificationBinding.user_trigger_id == UserTriggerBinding.id)
+            .join(
+                UserNotificationBinding,
+                UserNotificationBinding.user_trigger_id == UserTriggerBinding.id,
+            )
             .where(UserTriggerBinding.data_source_id.in_(payloads.keys()))
         )
         result = await self.session.execute(stmt)
         return result.all()
 
     @staticmethod
-    def _group_by_data_source(rows: list[tuple[UserTriggerBinding, UserNotificationBinding]]
-                              ) -> dict[int, list[tuple[UserTriggerBinding, UserNotificationBinding]]]:
+    def _group_by_data_source(
+        rows: list[tuple[UserTriggerBinding, UserNotificationBinding]],
+    ) -> dict[int, list[tuple[UserTriggerBinding, UserNotificationBinding]]]:
         """
         Группирует триггеры и уведомления по data_source_id.
 
@@ -77,9 +85,11 @@ class TriggerExecutorService:
             trigger_map[trigger.data_source_id].append((trigger, notification))
         return trigger_map
 
-    async def _run_for_one_source(self,
-                                  trigger_items: list[tuple[UserTriggerBinding, UserNotificationBinding]],
-                                  payload: dict):
+    async def _run_for_one_source(
+        self,
+        trigger_items: list[tuple[UserTriggerBinding, UserNotificationBinding]],
+        payload: dict,
+    ):
         """
         Обрабатывает триггеры и уведомления для одного источника данных.
 
@@ -100,8 +110,9 @@ class TriggerExecutorService:
                 print(f"[!] Trigger error: {e}")
 
     @staticmethod
-    def _group_notifications_by_trigger(trigger_items: list[tuple[UserTriggerBinding, UserNotificationBinding]]
-                                        ) -> dict[UserTriggerBinding, list[UserNotificationBinding]]:
+    def _group_notifications_by_trigger(
+        trigger_items: list[tuple[UserTriggerBinding, UserNotificationBinding]],
+    ) -> dict[UserTriggerBinding, list[UserNotificationBinding]]:
         """
         Группирует уведомления по триггерам.
 

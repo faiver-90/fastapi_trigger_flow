@@ -1,11 +1,15 @@
-import pytest
-
 from datetime import timedelta
-from jose import jwt, JWTError
-from src.modules.auth.api.v1.schemas import JWTCreateSchema
-from src.modules.auth.api.v1.services.jwt_service import create_token, create_access_token, create_refresh_token, \
-    decode_token
 
+import pytest
+from jose import JWTError, jwt
+
+from src.modules.auth.api.v1.schemas import JWTCreateSchema
+from src.modules.auth.api.v1.services.jwt_service import (
+    create_access_token,
+    create_refresh_token,
+    create_token,
+    decode_token,
+)
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.shared.db.models.auth import RefreshToken
 

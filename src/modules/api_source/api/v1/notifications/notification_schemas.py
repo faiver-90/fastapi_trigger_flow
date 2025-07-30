@@ -22,6 +22,4 @@ class NotificationUpdate(BaseModel):
 class NotificationOut(NotificationBase):
     id: int
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}

@@ -19,7 +19,5 @@ def get_auth_service(db: AsyncSession = Depends(get_async_session)) -> AuthServi
         AuthService: Экземпляр сервиса авторизации.
     """
     return AuthService(
-        user_repo=UserRepository(db),
-        jwt_repo=JWTRepo(db),
-        redis_client=redis_service
+        user_repo=UserRepository(db), jwt_repo=JWTRepo(db), redis_client=redis_service
     )

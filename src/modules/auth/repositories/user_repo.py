@@ -1,7 +1,6 @@
+from sqlalchemy import and_, exists, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, exists, or_
 
-from src.modules.auth.api.v1.schemas import UserCreateSchema
 from src.shared.db.models.auth import User
 
 
@@ -9,6 +8,7 @@ class UserRepository:
     """
     Репозиторий для работы с моделью пользователя.
     """
+
     def __init__(self, session: AsyncSession):
         """
         Инициализация сессии SQLAlchemy.
@@ -85,10 +85,7 @@ class UserRepository:
         Returns:
             User: Созданный пользователь.
         """
-        user = User(
-            **user_data,
-            hashed_password=hashed_password
-        )
+        user = User(**user_data, hashed_password=hashed_password)
         self.session.add(user)
         await self.session.commit()
         await self.session.refresh(user)

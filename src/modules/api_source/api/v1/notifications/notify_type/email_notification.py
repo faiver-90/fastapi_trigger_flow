@@ -1,9 +1,12 @@
 import os
 from email.message import EmailMessage
-from dotenv import load_dotenv
-import aiosmtplib
 
-from src.modules.api_source.api.v1.notifications.base_type_notify_class import BaseTypeNotificationClass
+import aiosmtplib
+from dotenv import load_dotenv
+
+from src.modules.api_source.api.v1.notifications.base_type_notify_class import (
+    BaseTypeNotificationClass,
+)
 
 load_dotenv()
 
@@ -52,7 +55,7 @@ class EmailNotification(BaseTypeNotificationClass):
                 port=self.smtp_port,
                 username=self.smtp_user,
                 password=self.smtp_pass,
-                start_tls=True
+                start_tls=True,
             )
             print(f"[+] Email was send: {recipient}")
         except Exception as e:
@@ -63,5 +66,5 @@ class EmailNotification(BaseTypeNotificationClass):
             "description": "Отправляет email.",
             "notification_config": {
                 "email": "Email получателя",
-            }
+            },
         }

@@ -9,5 +9,5 @@ class CRUDDataSourceService(BaseCRUDService[DataSourceRepo]):
         self.fernet = fernet
 
     async def create(self, data: dict, user_id=None):
-        data['source_key'] = self.fernet.encrypt_str(data['source_key'])
+        data["source_key"] = self.fernet.encrypt_str(data["source_key"])
         return await super().create(data, user_id)

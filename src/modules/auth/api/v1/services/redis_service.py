@@ -1,11 +1,11 @@
 import redis.asyncio as redis
-from typing import Optional
 
 
 class RedisService:
     """
     Сервис для работы с Redis — используется для хранения access токенов.
     """
+
     def __init__(self, url: str):
         """
         Инициализация Redis клиента.
@@ -15,7 +15,7 @@ class RedisService:
         """
         self.client = redis.from_url(url, decode_responses=True)
 
-    async def get(self, key: str) -> Optional[str]:
+    async def get(self, key: str) -> str | None:
         """
         Получить значение по ключу из Redis.
 

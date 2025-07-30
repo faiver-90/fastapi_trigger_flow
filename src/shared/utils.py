@@ -12,7 +12,7 @@ def ping_resource(url: str, max_retries: int = 3, delay: float = 1.0) -> bool:
     :param delay: задержка между попытками (в секундах)
     :return: True, если ответ получен с кодом 200, иначе False
     """
-    for attempt in range(max_retries):
+    for _ in range(max_retries):
         try:
             response = requests.get(url, timeout=5)
             if response.status_code == 200:

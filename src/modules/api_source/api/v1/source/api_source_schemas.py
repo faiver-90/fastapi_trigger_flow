@@ -1,10 +1,9 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
 class DataSourceBase(BaseModel):
     user_id: int
-    is_active: Optional[bool] = True
+    is_active: bool | None = True
 
 
 class DataSourceCreate(DataSourceBase):
@@ -13,12 +12,10 @@ class DataSourceCreate(DataSourceBase):
 
 
 class DataSourceUpdate(BaseModel):
-    is_active: Optional[bool] = None
+    is_active: bool | None = None
 
 
 class DataSourceOut(DataSourceBase):
     id: int
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}

@@ -10,7 +10,7 @@ async def send_request(
     params=None,
     headers=None,
     timeout=5.0,
-    **kwargs
+    **kwargs,
 ):
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
@@ -20,15 +20,13 @@ async def send_request(
                 json=json,
                 params=params,
                 headers=headers,
-                **kwargs
+                **kwargs,
             )
 
         if response.status_code >= 400:
-            raise HTTPException(status_code=response.status_code,
-                                detail=response.text)
+            raise HTTPException(status_code=response.status_code, detail=response.text)
 
         return response
 
     except httpx.RequestError as e:
-        raise HTTPException(status_code=502,
-                            detail=f"Service unreachable: {e}")
+        raise HTTPException(status_code=502, detail=f"Service unreachable: {e}") from e

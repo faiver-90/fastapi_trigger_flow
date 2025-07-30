@@ -1,6 +1,5 @@
-
 import os
-from typing import Union
+
 from cryptography.fernet import Fernet, InvalidToken
 from dotenv import load_dotenv
 
@@ -14,17 +13,19 @@ class FernetService:
         """
         key = os.getenv("FERNET_KEY", fernet_key)
         if not key:
-            raise ValueError("Fernet key not specified (neither in argument nor in FERNET_KEY)")
+            raise ValueError(
+                "Fernet key not specified (neither in argument nor in FERNET_KEY)"
+            )
         self.fernet = Fernet(key.encode())
 
-    def encrypt_str(self, data: Union[str, bytes]) -> str:
+    def encrypt_str(self, data: str | bytes) -> str:
         """Шифрует строку или байты, возвращает base64-строку."""
         if isinstance(data, str):
             data = data.encode()
         encrypted = self.fernet.encrypt(data)
         return encrypted.decode()
 
-    def decrypt_str(self, encrypted_data: Union[str, bytes]) -> str:
+    def decrypt_str(self, encrypted_data: str | bytes) -> str:
         """Расшифровывает данные в исходную строку."""
         if isinstance(encrypted_data, str):
             encrypted_data = encrypted_data.encode()

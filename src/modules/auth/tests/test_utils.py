@@ -1,7 +1,8 @@
-import pytest
-import httpx
-from fastapi import HTTPException
 from unittest.mock import AsyncMock, patch
+
+import httpx
+import pytest
+from fastapi import HTTPException
 
 from src.modules.auth.api.v1.utils import send_request
 
@@ -21,7 +22,7 @@ async def test_send_request_success():
             url="https://test.local/api",
             json=None,
             params=None,
-            headers=None
+            headers=None,
         )
 
 

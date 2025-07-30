@@ -1,17 +1,18 @@
+from typing import Any, Generic, TypeVar
+
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from typing import TypeVar, Generic, Type, Optional, Any
+from sqlalchemy.ext.asyncio import AsyncSession
 
 ModelType = TypeVar("ModelType")
 
 
 class BaseRepository(Generic[ModelType]):
-    def __init__(self, session: AsyncSession, model: Type[ModelType]):
+    def __init__(self, session: AsyncSession, model: type[ModelType]):
         self.session = session
         self.model = model
 
-    async def create(self, data: BaseModel | dict) -> Optional[ModelType]:
+    async def create(self, data: BaseModel | dict) -> ModelType | None:
         if isinstance(data, BaseModel):
             data = data.model_dump()
         obj = self.model(**data)
@@ -23,7 +24,7 @@ class BaseRepository(Generic[ModelType]):
     async def add_all(self, objects: list[Any]):
         self.session.add_all(objects)
 
-    async def get(self, obj_id: int, user_id: Optional[int] = None) -> Optional[ModelType]:
+    async def get(self, obj_id: int, user_id: int | None = None) -> ModelType | None:
         stmt = select(self.model).where(self.model.id == obj_id)
 
         if user_id is not None and hasattr(self.model, "user_id"):
@@ -32,17 +33,17 @@ class BaseRepository(Generic[ModelType]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def list(self, user_id: Optional[int] = None) -> list[ModelType]:
+    async def list(self, user_id: int | None = None) -> list[ModelType]:
         stmt = select(self.model)
 
         if user_id is not None and hasattr(self.model, "user_id"):
             stmt = stmt.where(self.model.user_id == user_id)
-        print('user_id', stmt)
+        print("user_id", stmt)
 
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
-    async def update(self, obj_id: int, data: dict) -> Optional[ModelType]:
+    async def update(self, obj_id: int, data: dict) -> ModelType | None:
         obj = await self.get(obj_id)
         if not obj:
             return None

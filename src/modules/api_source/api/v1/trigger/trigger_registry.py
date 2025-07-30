@@ -1,5 +1,5 @@
-from src.modules.api_source.api.v1.trigger.trigger_types.triggers_temperatures import TemperatureTrigger
+from src.modules.api_source.api.v1.trigger.trigger_types.triggers_temperatures import (
+    TemperatureTrigger,
+)
 
-TRIGGER_REGISTRY = {
-    "temp_trigger": TemperatureTrigger()
-}
+TRIGGER_REGISTRY = {"temp_trigger": TemperatureTrigger()}

@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +11,7 @@ class JWTRepo:
     """
     Репозиторий для работы с refresh токенами в базе данных.
     """
+
     def __init__(self, session: AsyncSession):
         """
         Инициализация сессии SQLAlchemy.
@@ -32,7 +33,12 @@ class JWTRepo:
         """
         expires_at = datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS)
 
-        jwt = RefreshToken(user_id=jwt_data.user_id, token=jwt_data.token, expires_at=expires_at, revoked=False)
+        jwt = RefreshToken(
+            user_id=jwt_data.user_id,
+            token=jwt_data.token,
+            expires_at=expires_at,
+            revoked=False,
+        )
 
         self.session.add(jwt)
         await self.session.commit()

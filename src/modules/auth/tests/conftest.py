@@ -1,17 +1,20 @@
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from fastapi import FastAPI, Depends
-from fastapi.exceptions import RequestValidationError, HTTPException
+from fastapi import Depends, FastAPI
+from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.testclient import TestClient
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from passlib.context import CryptContext
 
 from src.modules.auth.api.v1.services.auth_service import AuthService
-from src.shared.db.models.auth import User
-from src.modules.auth.exceptions_handle.stream_exceptions_handlers import validation_exception_handler, \
-    http_exception_handler, generic_exception_handler
+from src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
+    generic_exception_handler,
+    http_exception_handler,
+    validation_exception_handler,
+)
 from src.modules.auth.repositories.user_repo import UserRepository
+from src.shared.db.models.auth import User
 from src.shared.deps.auth_dependencies import authenticate_user, verify_superuser
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -97,9 +100,7 @@ def mock_redis_client():
 @pytest.fixture(scope="function")
 def auth_service(mock_user_repo, mock_jwt_repo, mock_redis_client):
     return AuthService(
-        user_repo=mock_user_repo,
-        jwt_repo=mock_jwt_repo,
-        redis_client=mock_redis_client
+        user_repo=mock_user_repo, jwt_repo=mock_jwt_repo, redis_client=mock_redis_client
     )
 
 
@@ -123,8 +124,5 @@ def user_repo(async_mock_session):
 @pytest.fixture(scope="function")
 def fake_user():
     return User(
-        id=1,
-        username="testuser",
-        email="test@example.com",
-        hashed_password="hashed123"
+        id=1, username="testuser", email="test@example.com", hashed_password="hashed123"
     )

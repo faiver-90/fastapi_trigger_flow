@@ -1,7 +1,9 @@
-from src.modules.api_source.api.v1.notifications.notification_repo import NotificationRepo
+from src.modules.api_source.api.v1.notifications.notification_repo import (
+    NotificationRepo,
+)
 from src.modules.api_source.api.v1.trigger.trigger_repo import TriggerRepo
 from src.modules.api_source.api.v1.trigger.trigger_schemas import BulkTriggerCreate
-from src.shared.db import UserTriggerBinding, UserNotificationBinding
+from src.shared.db import UserNotificationBinding, UserTriggerBinding
 from src.shared.services.base_crud_service import BaseCRUDService
 
 
@@ -21,7 +23,7 @@ class TriggerService(BaseCRUDService[TriggerRepo]):
 
         return {
             "created_triggers": len(triggers),
-            "created_notifications": len(notifications)
+            "created_notifications": len(notifications),
         }
 
     @staticmethod
@@ -30,20 +32,23 @@ class TriggerService(BaseCRUDService[TriggerRepo]):
             UserTriggerBinding(
                 **t.model_dump(exclude={"notifications"}),
                 user_id=data.user_id,
-                data_source_id=data.data_source_id)
+                data_source_id=data.data_source_id,
+            )
             for t in data.triggers
         ]
 
     @staticmethod
-    def _build_notifications(triggers: list[UserTriggerBinding], data: BulkTriggerCreate) \
-            -> list[UserNotificationBinding]:
+    def _build_notifications(
+        triggers: list[UserTriggerBinding], data: BulkTriggerCreate
+    ) -> list[UserNotificationBinding]:
         notifications: list[UserNotificationBinding] = []
 
-        for trigger, trigger_data in zip(triggers, data.triggers):
-
+        for trigger, trigger_data in zip(triggers, data.triggers, strict=False):
             for notif in trigger_data.notifications:
                 notif_data = notif.model_dump()
-                notifications.append(UserNotificationBinding(user_trigger_id=trigger.id,
-                                                             user_id=data.user_id,
-                                                             **notif_data))
+                notifications.append(
+                    UserNotificationBinding(
+                        user_trigger_id=trigger.id, user_id=data.user_id, **notif_data
+                    )
+                )
         return notifications

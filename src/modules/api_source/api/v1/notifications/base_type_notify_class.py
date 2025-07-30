@@ -1,11 +1,12 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 
 class BaseTypeNotificationClass(ABC):
     @abstractmethod
-    async def send(self, payload: dict, config: dict):  ...
+    async def send(self, payload: dict, config: dict): ...
 
     @classmethod
+    @abstractmethod
     def describe(cls) -> dict: ...
 
     def __str__(self) -> str:
