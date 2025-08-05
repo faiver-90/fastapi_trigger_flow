@@ -29,7 +29,9 @@ def get_app() -> FastAPI:
         description="Возвращает статус работы сервера и подключения к базе данных.",
         tags=["Service"],
     )
-    async def health_check(session: AsyncSession = Depends(get_async_session)):
+    async def health_check(
+        session: AsyncSession = Depends(get_async_session),
+    ) -> dict[str, str]:
         try:
             await session.execute(text("SELECT 1"))
             return {"status": "ok", "database": "connected"}
