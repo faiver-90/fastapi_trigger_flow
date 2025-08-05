@@ -8,12 +8,9 @@ EXEC = docker exec - it
 # make re-create         # Перезапуск контейнеров (без пересборки)
 #
 # make re-all            # Полный сброс: удалить всё, почистить, пересобрать и запустить
-#
-# make test              # Запуск Django тестов
-# make makemigrations    # Создание новых миграций
-# make migrate           # Применение миграций
-# make superuser         # Создание суперпользователя
-# make shell             # Открытие Django shell в контейнере
+# make up_web            # Поднять только web
+# make up_all            # Поднять инфраструктуру и web
+
 
 .PHONY: up
 up:
@@ -21,27 +18,7 @@ up:
 
 .PHONY: down
 down:
-	docker-compose down 
-
-.PHONY: test
-test:
-	${DC} run web python manage.py test
-
-.PHONY: makemigrations
-makemigrations:
-	${DC} run web python manage.py makemigrations
-
-.PHONY: superuser
-superuser:
-	${DC} run web python manage.py createsuperuser
-
-.PHONY: shell
-shell:
-	${DC} run web python manage.py shell
-
-.PHONY: migrate
-migrate:
-	${DC} run web python manage.py migrate
+	docker-compose down
 
 .PHONY: re-all
 re-all:
@@ -96,3 +73,36 @@ ruff-clean:
 
 # Общая команда: проверка и автоисправление
 lint: ruff-fix ruff-format
+
+
+# Poetry run
+.PHONY: run install migrate
+
+# Запуск сервера FastAPI
+run_web:
+	poetry run uvicorn src.main_app.init_app:app --host 0.0.0.0 --port 8001 --reload
+
+# Установка зависимостей
+install:
+	poetry install
+
+# Применение миграций Alembic
+migrate:
+	poetry run alembic upgrade head
+
+# Всё вместе: установка, миграции и запуск
+up_all:
+	$(MAKE) re-create && $(MAKE) install && $(MAKE) migrate && $(MAKE) run_web
+
+.PHONY: up_web_check_db
+
+up_web:
+	@if docker ps --format '{{.Names}}' | grep -q '^db$$'; then \
+		echo "✅ The DB container is running. Let's continue...."; \
+		$(MAKE) install; \
+		$(MAKE) migrate; \
+		$(MAKE) run_web; \
+	else \
+		echo "❌ The DB container is not running. Start it with the command: make up or docker compose up -d"; \
+		exit 1; \
+	fi

@@ -1,11 +1,29 @@
-FROM python:3.11-slim
+FROM python:3.13-slim
+
+# Установка зависимостей системы
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    libpq-dev \
+    gcc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Установка poetry
+ENV POETRY_VERSION=1.8.2
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+# Отключаем создание виртуального окружения внутри poetry
+RUN poetry config virtualenvs.create false
 
 WORKDIR /app
-COPY requirements.txt .
 
+# Копируем файлы для установки зависимостей
+COPY pyproject.toml poetry.lock ./
 
+# Устанавливаем зависимости
+RUN poetry install --no-root --with dev
 
-#  RUN poetry config virtualenvs.create false
-
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Копируем всё остальное
+COPY . .

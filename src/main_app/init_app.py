@@ -17,14 +17,24 @@ from src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
 def get_app() -> FastAPI:
     app_init = FastAPI(version="1.0.0")
 
+    from sqlalchemy import text
+    from sqlalchemy.exc import SQLAlchemyError
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from src.shared.db.session import get_async_session
+
     @app_init.get(
-        "/",
-        summary="Проверка соединения с сервером",
-        description="Тестовый endpoint для проверки работоспособности сервера и очереди задач Celery.",
+        "/health_check",
+        summary="Проверка работоспособности приложения и базы данных",
+        description="Возвращает статус работы сервера и подключения к базе данных.",
         tags=["Service"],
     )
-    async def test_connection():
-        return {"It's": "work"}
+    async def health_check(session: AsyncSession = Depends(get_async_session)):
+        try:
+            await session.execute(text("SELECT 1"))
+            return {"status": "ok", "database": "connected"}
+        except SQLAlchemyError as e:
+            return {"status": "error", "database": f"unavailable: {str(e)}"}
 
     # ================================================
     from fastapi import Body
