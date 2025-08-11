@@ -56,6 +56,8 @@ def get_app() -> FastAPI:
         payloads = {1: {"temp": temp}}
         await service.run_for_all_sources(payloads)
         return {"result": "message send"}
+    
+    # ================================================
 
     app_init.add_exception_handler(RequestValidationError, validation_exception_handler)
     app_init.add_exception_handler(HTTPException, http_exception_handler)

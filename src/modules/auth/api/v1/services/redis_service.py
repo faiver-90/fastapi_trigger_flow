@@ -60,4 +60,4 @@ class RedisService:
         return await self.client.exists(key) == 1
 
 
-redis_service = RedisService(url="redis://redis:6379/0")
+redis_service = RedisService(url="redis://localhost:6379/0")

@@ -3,10 +3,8 @@ from collections import defaultdict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.modules.api_source.api.v1.notifications.notifications_registry import (
-    NOTIFY_REGISTRY,
-)
 from src.modules.api_source.api.v1.trigger.trigger_registry import TRIGGER_REGISTRY
+from src.shared.celery_module.tasks import notify_email, notify_sms, notify_tg
 from src.shared.db import UserNotificationBinding, UserTriggerBinding
 
 
@@ -130,18 +128,22 @@ class TriggerExecutorService:
     @staticmethod
     async def _notify(notifications: list[UserNotificationBinding], payload: dict):
         """
-        Отправляет уведомления, если триггер сработал.
-
-        Args:
-            notifications: список уведомлений, которые нужно отправить.
-            payload: исходные данные, по которым сработал триггер.
+        Кладём задачи в соответствующие очереди; воркеры уже сами дернут NOTIFY_REGISTRY.
         """
+        TASK_BY_TYPE = {
+                "email": notify_email,
+                "tg":    notify_tg,
+                "sms":   notify_sms,
+            }
         for notif in notifications:
             for notif_type in notif.notification_type:
-                notifier = NOTIFY_REGISTRY.get(notif_type)
-                if not notifier:
+                task = TASK_BY_TYPE.get(notif_type)
+                if not task:
+                    # тип не поддержан — пропускаем
                     continue
                 try:
-                    await notifier.send(payload, notif.notification_config or {})
+                    task.apply_async(
+                        args=(payload, notif.notification_config or {}),
+                    )
                 except Exception as e:
-                    print(f"[!] Notification error: {e}")
+                    print(f"[!] Notification enqueue error ({notif_type}): {e}")

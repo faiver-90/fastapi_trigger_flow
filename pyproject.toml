@@ -27,6 +27,7 @@ python-jose = {extras = ["pycryptodome"], version = "^3.5.0"}
 cryptography = "^45.0.5"
 pydantic = {extras = ["email"], version = "^2.11.7"}
 python-json-logger = "^3.3.0"
+bcrypt = "^4.3.0"
 
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.16.4"

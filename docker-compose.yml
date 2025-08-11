@@ -1,67 +1,81 @@
 services:
-  nginx:
-    container_name: nginx
-    image: nginx
+  rabbitmq:
+    container_name: rabbit
+    image: rabbitmq:3.12-management
     restart: always
-    volumes:
-      - ./nginx_conf/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx_conf/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - "8000:80"
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: appuser
+      RABBITMQ_DEFAULT_PASS: apppass
+      RABBITMQ_DEFAULT_VHOST: appvhost
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
 
-#  main_service:
-#    build: .
-#    command:  >
-#      bash -c "
-#      poetry install &&
-#      poetry run alembic upgrade head &&
-#      poetry run uvicorn src.main_app.init_app:app --host 0.0.0.0 --port 8001 --reload"
-#    restart: always
-#    volumes:
-#      - ./:/app
-#    expose:
-#      - "8001"
-#    env_file:
-#      - .env
-#    depends_on:
-#      - db
-#      - redis
-#    logging:
-#      options:
-#        max-size: "10m"
-#        max-file: "3"
-
-  celery-beat:
-    container_name: main_beat
-    restart: unless-stopped
-    build: .
-    command: bash -c "
-      poetry run celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
-    volumes:
-      - ./:/app
-    depends_on:
-      - db
-      - redis
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
 
   celery-worker:
     container_name: main_celery
     build: .
     restart: unless-stopped
+    working_dir: /app
     command: bash -c "
-      poetry run celery -A src.shared.celery_module.celery_worker.celery_app worker -l info"
-    volumes:
-      - ./:/app
+      poetry run celery -A src.shared.celery_module.celery_worker.celery_app worker -l info -Q default,notify_email,notify_tg,notify_sms"
+    environment:
+      PYTHONPATH: /app
+      RABBIT_HOST: rabbitmq
+      RABBIT_USER: appuser
+      RABBIT_PASS: apppass
+      RABBIT_VHOST: appvhost
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
     depends_on:
-      - db
-      - redis
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./src:/app/src:rw
+
+  celery-beat:
+    container_name: main_beat
+    build: .
+    restart: unless-stopped
+    working_dir: /app
+    command: >
+      bash -c "poetry run celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
+    environment:
+      PYTHONPATH: /app
+      RABBIT_HOST: rabbitmq
+      RABBIT_USER: appuser
+      RABBIT_PASS: apppass
+      RABBIT_VHOST: appvhost
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./src:/app/src:rw
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx_conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx_conf/nginx.conf:/etc/nginx/nginx.conf
 
   db:
     container_name: db
@@ -71,32 +85,10 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-#    expose:
-#      - 5432
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-
-  redis:
-    container_name: redis
-    image: redis:latest
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - "6379:6379"
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_PORT=6379
-      - REDIS_DATABASES=16
-
-#  rabbitmq:
-#    container_name: rabbit
-#    image: rabbitmq:3.10.7-management
-#    ports:
-#      - "5672:5672"     # ← AMQP для Celery и других клиентов
-#      - "15672:15672"   # ← Web UI 8777
 
 volumes:
   postgres_data:
