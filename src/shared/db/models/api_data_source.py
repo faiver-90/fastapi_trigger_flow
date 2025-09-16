@@ -1,18 +1,25 @@
 from sqlalchemy import Boolean, Integer, String
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.shared.db.base import Base
 
 
-class DataSource(Base):
-    __tablename__ = "data_sources"
+class Sources(Base):
+    __tablename__ = "sources"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    is_active: Mapped[bool] = mapped_column(
-        Boolean, default=True, server_default="true"
-    )
-    source_key: Mapped[str] = mapped_column(
-        String(255), nullable=False, server_default="default_key"
-    )
-    data_source_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    id: Mapped[int] = mapped_column(String(255), primary_key=True)
+    user_id: Mapped[int] = mapped_column(String(255), nullable=False)
+    source_type_id: Mapped[int] = mapped_column(String(255), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    config: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+
+class SourcesTypes(Base):
+    __tablename__ = "sources_types"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=True)
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
+    config: Mapped[dict] = mapped_column(JSONB, nullable=False)
