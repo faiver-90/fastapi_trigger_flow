@@ -115,16 +115,6 @@ tasks:
       - sh: 'test -n "{{.MSG}}"'
         msg: 'Ошибка: Не указан комментарий. Использование: task commit -- "комментарий"'
     cmds:
-      - |
-        if git diff --cached --quiet; then
-          echo "Нет изменений для коммита."
-          exit 0
-        fi
-      - |
-        if ! command -v ruff &> /dev/null; then
-          echo "Ошибка: ruff не установлен. Установите его: pipx install ruff"
-          exit 1
-        fi
       - "poetry run ruff format ."
       - "poetry run ruff check . --fix"
       - "git add ."
