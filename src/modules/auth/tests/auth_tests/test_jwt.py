@@ -20,7 +20,6 @@ TEST_USER_ID = "123"
 
 
 # JWT repo
-@pytest.mark.asyncio
 async def test_create_repo_jwt_token(async_mock_session):
     repo = JWTRepo(session=async_mock_session)
     schema = JWTCreateSchema(user_id=1, token="mock_token")

@@ -14,7 +14,6 @@ async def test_health_check(async_client):
 
 
 # Auth service
-@pytest.mark.asyncio
 async def test_login_success(
     auth_service, mock_user_repo, mock_jwt_repo, mock_redis_client, mock_user
 ):
@@ -30,7 +29,6 @@ async def test_login_success(
     mock_jwt_repo.create.assert_called_once()
 
 
-@pytest.mark.asyncio
 async def test_login_wrong_password(auth_service, mock_user_repo, mock_user):
     mock_user_repo.get_by_fields.return_value = mock_user
 
@@ -38,7 +36,6 @@ async def test_login_wrong_password(auth_service, mock_user_repo, mock_user):
         await auth_service.login("testuser", "wrongpassword")
 
 
-@pytest.mark.asyncio
 async def test_login_user_not_found(auth_service, mock_user_repo):
     mock_user_repo.get_by_fields.return_value = None
 
@@ -46,7 +43,6 @@ async def test_login_user_not_found(auth_service, mock_user_repo):
         await auth_service.login("notfound", "any")
 
 
-@pytest.mark.asyncio
 async def test_register_user_success(auth_service, mock_user_repo, mock_user):
     data = UserCreateSchema(
         username=mock_user.username, email=mock_user.email, password="securepassword"
@@ -61,7 +57,6 @@ async def test_register_user_success(auth_service, mock_user_repo, mock_user):
     mock_user_repo.create.assert_called_once()
 
 
-@pytest.mark.asyncio
 async def test_register_user_already_exists(auth_service, mock_user_repo, mock_user):
     data = UserCreateSchema(
         username=mock_user.username, email=mock_user.email, password="123456"

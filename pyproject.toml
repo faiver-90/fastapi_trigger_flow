@@ -33,6 +33,7 @@ bcrypt = "^4.3.0"
 alembic = "^1.16.4"
 pytest = "^8.4.1"
 black = "^25.1.0"
+pytest-asyncio = "^1.2.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -48,6 +49,7 @@ addopts = """
     --color=yes
     --continue-on-collection-errors
 """
+asyncio_mode = "auto"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

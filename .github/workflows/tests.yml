@@ -11,23 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Клонируем репозиторий
+      # Клонируем репозиторий
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ✅ Устанавливаем Python
+      # Устанавливаем Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # ✅ Устанавливаем зависимости
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      # Устанавливаем Poetry
+      - name: Install Poetry
+        run: pipx install poetry
 
-      # ✅ Запускаем тесты
+      # Настройка кеша для Poetry
+      - name: Set up Poetry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-
+
+      # Устанавливаем зависимости (с учётом poetry.lock)
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+
+      # Запускаем тесты
       - name: Run pytest
-        run: |
-          pytest
+        run: poetry run pytest
