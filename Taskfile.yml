@@ -76,6 +76,16 @@ tasks:
     cmds:
       - "poetry run alembic upgrade head"
 
+  make_migration:
+    desc: "Создать новую ревизию Alembic (autogenerate)"
+    vars:
+      MSG: '{{.CLI_ARGS}}'
+    preconditions:
+      - sh: 'test -n "{{.MSG}}"'
+        msg: 'Ошибка: не указан комментарий. Использование: task makemigration -- "комментарий"'
+    cmds:
+      - 'poetry run alembic revision --autogenerate -m "{{.MSG}}"'
+
   run_web:
     desc: "uvicorn dev server"
     cmds:
@@ -83,9 +93,6 @@ tasks:
 
   up_web:
     desc: "Check DB container, then install+migrate+run"
-    preconditions:
-      - sh: 'docker ps --format "{{.Names}}" | grep -q "^db$"'
-        msg: 'DB container is not running. Run `task up` first.'
     cmds:
       - task: install
       - task: migrate
