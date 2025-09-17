@@ -18,20 +18,21 @@ dotenv = "^0.9.9"
 requests = "^2.32.4"
 aiosmtplib = "^4.0.1"
 pytz = "^2025.2"
-ruff = "^0.12.7"
+ruff = "^0.13.0"
 uvicorn = "^0.35.0"
 gunicorn = "^23.0.0"
 asyncpg = "^0.30.0"
 psycopg2-binary = "^2.9.9"
-python-jose = {extras = ["pycryptodome"], version = "^3.5.0"}
-cryptography = "^45.0.5"
-pydantic = {extras = ["email"], version = "^2.11.7"}
+python-jose = { extras = ["pycryptodome"], version = "^3.5.0" }
+cryptography = "^46.0.1"
+pydantic = { extras = ["email"], version = "^2.11.7" }
 python-json-logger = "^3.3.0"
 bcrypt = "^4.3.0"
 
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.16.4"
 pytest = "^8.4.1"
+black = "^25.1.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -48,11 +49,6 @@ addopts = """
     --continue-on-collection-errors
 """
 
-[tool.ruff]
-line-length = 88
-indent-width = 4
-target-version = "py311"
-
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 ignore = ["E501", "B008"]
@@ -68,3 +64,7 @@ indent-style = "space"
 docstring-code-format = true
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
