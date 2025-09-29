@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from src.modules.source.api.v1.get_service import get_data_source_service
@@ -12,7 +14,10 @@ from src.modules.source.services.data_source_service import (
 from src.modules.source.types.data_source_registry import (
     DATA_SOURCE_REGISTRY,
 )
+from src.shared.configs.decorators import log_action
 from src.shared.deps.auth_dependencies import get_user_id
+
+source_logger = logging.getLogger("source_log")
 
 v1_api_source = APIRouter(
     prefix="/api_sources",
@@ -27,6 +32,7 @@ v1_api_source = APIRouter(
     summary="Список доступных АПИ",
     description="Возвращает список всех зарегистрированных АПИ.",
 )
+@log_action("message", logger=source_logger)
 async def list_source_types():
     return [
         {"id": int(source_id), "name": config["name"], "config": config.get("data", {})}

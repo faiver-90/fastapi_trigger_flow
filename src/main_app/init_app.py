@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI
 from fastapi.exceptions import HTTPException, RequestValidationError
 
@@ -10,13 +12,19 @@ from src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
 from src.modules.notifications.api.v1.router import v1_notification_router
 from src.modules.source.api.v1.router import v1_api_source
 from src.modules.trigger.api.v1.trigger_router import v1_trigger_router
+from src.shared.configs.log_conf import setup_logger
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    setup_logger()
+    print("Логирование инициализировано")
+    yield
+    print("Приложение останавливается")
 
 
 def get_app() -> FastAPI:
-    app_init = FastAPI(
-        version="1.0.0",
-        docs_url="/swagger",
-    )
+    app_init = FastAPI(version="1.0.0", docs_url="/swagger", lifespan=lifespan)
 
     from sqlalchemy import text
     from sqlalchemy.exc import SQLAlchemyError

@@ -13,11 +13,9 @@ from src.modules.auth.api.v1.services.jwt_service import (
 from src.modules.auth.api.v1.services.redis_service import RedisService
 from src.modules.auth.configs.crypt_conf import pwd_context
 from src.modules.auth.configs.jwt_conf import ACCESS_EXPIRE_MIN
-from src.modules.auth.configs.log_conf import setup_auth_logger
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
 
-setup_auth_logger()
 auth_logger = logging.getLogger("auth")
 errors_logger = logging.getLogger("errors")
 

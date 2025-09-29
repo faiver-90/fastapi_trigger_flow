@@ -1,7 +1,5 @@
 from src.modules.notifications.repository.notification_repo import NotificationRepo
 from src.modules.trigger.repository.trigger_repo import TriggerRepo
-from src.shared.db import Triggers
-from src.shared.db.models.notifications import Notifications
 from src.shared.services.base_crud_service import BaseCRUDService
 
 
