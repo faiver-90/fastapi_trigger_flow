@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from src.modules.source.api.v1.get_service import get_data_source_service
 from src.modules.source.api.v1.schemas import (
-    DataSourceCreate,
-    DataSourceOut,
-    DataSourceUpdate,
+    SourceCreate,
+    SourceOut,
+    SourceUpdate,
 )
 from src.modules.source.services.data_source_service import (
     CRUDDataSourceService,
@@ -23,7 +23,7 @@ v1_api_source = APIRouter(
 
 @v1_api_source.get(
     "/list_types",
-    dependencies=[],
+    # dependencies=[],
     summary="Список доступных АПИ",
     description="Возвращает список всех зарегистрированных АПИ.",
 )
@@ -39,12 +39,12 @@ async def list_source_types():
 
 @v1_api_source.post(
     "/",
-    response_model=DataSourceOut,
+    response_model=SourceOut,
     summary="Создание источника данных",
     description="Создаёт новый источник данных с указанными параметрами: имя, учётные данные и статус активности.",
 )
 async def create_api_source(
-    data: DataSourceCreate,
+    data: SourceCreate,
     service: CRUDDataSourceService = Depends(get_data_source_service),
     user_id=Depends(get_user_id),
 ):
@@ -53,7 +53,7 @@ async def create_api_source(
 
 @v1_api_source.get(
     "/{source_id}",
-    response_model=DataSourceOut,
+    response_model=SourceOut,
     summary="Получить источник данных",
     description="Возвращает информацию об источнике данных по его ID. Если источник не найден — возвращает ошибку 404.",
 )
@@ -68,7 +68,7 @@ async def get_api_source(
 
 @v1_api_source.get(
     "/",
-    response_model=list[DataSourceOut],
+    response_model=list[SourceOut],
     summary="Список источников данных",
     description="Возвращает список всех источников данных. "
     "Можно указать параметр `user_id` для фильтрации по пользователю.",
@@ -81,14 +81,14 @@ async def list_api_sources(
 
 @v1_api_source.put(
     "/{source_id}",
-    response_model=DataSourceOut,
+    response_model=SourceOut,
     summary="Обновить источник данных",
     description="Обновляет данные источника по его ID. Принимает изменённые поля и возвращает обновлённый объект."
     " Ошибка 404, если не найден.",
 )
 async def update_api_source(
     source_id: int,
-    data: DataSourceUpdate,
+    data: SourceUpdate,
     service: CRUDDataSourceService = Depends(get_data_source_service),
 ):
     updated = await service.update(source_id, data)

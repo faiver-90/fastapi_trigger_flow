@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from src.modules.trigger.api.v1.get_service import get_trigger_service
 from src.modules.trigger.api.v1.trigger_schemas import (
-    BulkTriggerCreate,
     TriggerCreate,
     TriggerOut,
     TriggerUpdate,
@@ -31,15 +30,15 @@ async def list_trigger_types():
     ]
 
 
-@v1_trigger_router.post(
-    "/bulk-create",
-    summary="Создание триггеров с уведомлениями",
-    description="Создает множество триггеров и уведомлений для них в одном запросе.",
-)
-async def bulk_create_trigger(
-    data: BulkTriggerCreate, service: TriggerService = Depends(get_trigger_service)
-):
-    return await service.bulk_create(data)
+# @v1_trigger_router.post(
+#     "/bulk-create",
+#     summary="Создание триггеров с уведомлениями",
+#     description="Создает множество триггеров и уведомлений для них в одном запросе.",
+# )
+# async def bulk_create_trigger(
+#     data: BulkTriggerCreate, service: TriggerService = Depends(get_trigger_service)
+# ):
+#     return await service.bulk_create(data)
 
 
 @v1_trigger_router.post(

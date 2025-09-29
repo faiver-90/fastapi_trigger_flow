@@ -1,13 +1,14 @@
 from typing import Any
-
 from pydantic import BaseModel, Field
 
 
 class TriggerBase(BaseModel):
-    user_id: int
-    trigger_type: str
-    trigger_params: dict[str, Any] | None = Field(default_factory=dict)
-    data_source_id: int
+    user_id: int | None = None
+    source_id: int | None = None
+    trigger_type_id: int | None = None
+    name: str | None = None
+    config: dict[str, Any] = Field(default_factory=dict)
+    is_active: bool | None = None
 
 
 class TriggerCreate(TriggerBase):
@@ -15,30 +16,35 @@ class TriggerCreate(TriggerBase):
 
 
 class TriggerUpdate(BaseModel):
-    trigger_params: dict[str, Any] | None = None
-    data_source_id: int | None = None
+    user_id: int | None = None
+    source_id: int | None = None
+    trigger_type_id: int | None = None
+    name: str | None = None
+    config: dict[str, Any] | None = None
+    is_active: bool | None = None
 
 
 class TriggerOut(TriggerBase):
     id: int
-
     model_config = {"from_attributes": True}
 
 
-class NotificationCreate(BaseModel):
-    notification_type: list[str]
-    notification_config: dict[str, Any] = Field(default_factory=dict)
+class TriggerTypeBase(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    config: dict[str, Any]
 
 
-class TriggerWithNotificationsCreate(BaseModel):
-    trigger_type: str
-    trigger_params: dict[str, Any] = Field(
-        default_factory=dict, description="Insert params here"
-    )
-    notifications: list[NotificationCreate]
+class TriggerTypeCreate(TriggerTypeBase):
+    pass
 
 
-class BulkTriggerCreate(BaseModel):
-    data_source_id: int
-    user_id: int
-    triggers: list[TriggerWithNotificationsCreate]
+class TriggerTypeUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    config: dict[str, Any] | None = None
+
+
+class TriggerTypeOut(TriggerTypeBase):
+    id: int
+    model_config = {"from_attributes": True}

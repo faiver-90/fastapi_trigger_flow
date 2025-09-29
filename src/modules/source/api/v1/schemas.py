@@ -1,21 +1,48 @@
-from pydantic import BaseModel
+from typing import Any
+from pydantic import BaseModel, Field
 
 
-class DataSourceBase(BaseModel):
+class SourceBase(BaseModel):
     user_id: int
-    is_active: bool | None = True
+    source_type_id: int
+    name: str
+    config: dict[str, Any] = Field(default_factory=dict)
+    is_active: bool
 
 
-class DataSourceCreate(DataSourceBase):
-    source_key: str
-    data_source_id: int
+class SourceCreate(SourceBase):
+    pass
 
 
-class DataSourceUpdate(BaseModel):
+class SourceUpdate(BaseModel):
+    user_id: str | None = None
+    source_type_id: str | None = None
+    name: str | None = None
+    config: dict[str, Any] | None = None
     is_active: bool | None = None
 
 
-class DataSourceOut(DataSourceBase):
+class SourceOut(SourceBase):
     id: int
+    model_config = {"from_attributes": True}
 
+
+class SourceTypeBase(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    config: dict[str, Any]
+
+
+class SourceTypeCreate(SourceTypeBase):
+    pass
+
+
+class SourceTypeUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    config: dict[str, Any] | None = None
+
+
+class SourceTypeOut(SourceTypeBase):
+    id: int
     model_config = {"from_attributes": True}
