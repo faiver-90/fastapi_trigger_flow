@@ -53,7 +53,7 @@ async def create_trigger(
     service: TriggerService = Depends(get_trigger_service),
     user_id: int = Depends(get_user_id),
 ):
-    return await service.create(data.dict(), user_id)
+    return await service.create(data.model_dump(), user_id)
 
 
 @v1_trigger_router.get(
@@ -98,7 +98,7 @@ async def update_trigger(
     service: TriggerService = Depends(get_trigger_service),
     user_id: int = Depends(get_user_id),
 ):
-    obj = await service.update(item_id, data.dict(exclude_unset=True), user_id)
+    obj = await service.update(item_id, data.model_dump(exclude_unset=True), user_id)
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
     return obj

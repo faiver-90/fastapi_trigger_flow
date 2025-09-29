@@ -48,7 +48,7 @@ async def create_api_source(
     service: CRUDDataSourceService = Depends(get_data_source_service),
     user_id=Depends(get_user_id),
 ):
-    return await service.create(data.dict(), user_id)
+    return await service.create(data.model_dump(), user_id)
 
 
 @v1_api_source.get(

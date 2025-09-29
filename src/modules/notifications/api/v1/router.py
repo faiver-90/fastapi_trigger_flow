@@ -91,7 +91,7 @@ async def update_notification(
     service: CRUDNotificationService = Depends(get_notification_service),
     user_id: int = Depends(get_user_id),
 ):
-    obj = await service.update(item_id, data.dict(exclude_unset=True), user_id)
+    obj = await service.update(item_id, data.model_dump(exclude_unset=True), user_id)
     if not obj:
         raise HTTPException(status_code=404, detail="Not found")
     return obj
