@@ -55,7 +55,7 @@ class BaseRepository(Generic[ModelType]):
         await self.session.refresh(obj)
         return obj
 
-    async def delete(self, obj_id: int) -> bool:
+    async def delete(self, obj_id: int, user_id: int) -> bool:
         obj = await self.get(obj_id)
         if not obj:
             return False
