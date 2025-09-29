@@ -43,7 +43,7 @@ class BaseRepository(Generic[ModelType]):
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
-    async def update(self, obj_id: int, data: dict) -> ModelType | None:
+    async def update(self, obj_id: int, data: dict, user_id: int) -> ModelType | None:
         obj = await self.get(obj_id)
         if not obj:
             return None

@@ -16,8 +16,7 @@ AsyncSessionLocal = async_sessionmaker(
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
-        async with session.begin():
-            yield session
+        yield session
 
 
 @contextmanager

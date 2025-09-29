@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from src.modules.source.api.v1.get_service import get_data_source_service
 from src.modules.source.api.v1.schemas import (
@@ -29,10 +29,7 @@ v1_api_source = APIRouter(
 )
 async def list_source_types():
     return [
-        {
-            "id": int(source_id),
-            "name": config["name"],
-        }
+        {"id": int(source_id), "name": config["name"], "config": config.get("data", {})}
         for source_id, config in DATA_SOURCE_REGISTRY.items()
     ]
 
@@ -75,8 +72,13 @@ async def get_api_source(
 )
 async def list_api_sources(
     service: CRUDDataSourceService = Depends(get_data_source_service),
+    user_id_query: int | None = Query(
+        None, description="ID пользователя для фильтрации"
+    ),
+    user_id_token: int = Depends(get_user_id),
 ):
-    return await service.list()
+    user_id = user_id_query or user_id_token
+    return await service.list(user_id)
 
 
 @v1_api_source.put(

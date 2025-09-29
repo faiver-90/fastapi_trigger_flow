@@ -15,8 +15,8 @@ class SourceCreate(SourceBase):
 
 
 class SourceUpdate(BaseModel):
-    user_id: str | None = None
-    source_type_id: str | None = None
+    user_id: int | None = None
+    source_type_id: int | None = None
     name: str | None = None
     config: dict[str, Any] | None = None
     is_active: bool | None = None
