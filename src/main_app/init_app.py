@@ -49,8 +49,8 @@ def get_app() -> FastAPI:
         except Exception as e:
             return {"status": "error", "database": f"unavailable: {str(e)}"}
 
-    app_init.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app_init.add_exception_handler(HTTPException, http_exception_handler)
+    app_init.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore
+    app_init.add_exception_handler(HTTPException, http_exception_handler)  # type: ignore
     app_init.add_exception_handler(Exception, generic_exception_handler)
     app_init.include_router(v1_auth)
     app_init.include_router(v1_api_source)

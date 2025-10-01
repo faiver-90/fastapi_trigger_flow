@@ -73,7 +73,7 @@ class AuthService:
         await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)
 
         jwt = await self.jwt_repo.create(
-            JWTCreateSchema(user_id=user_id, token=refresh)
+            JWTCreateSchema(user_id=int(user_id), token=refresh)
         )
 
         return LoginResponseSchema(
@@ -82,7 +82,7 @@ class AuthService:
             token_type="bearer",
             expires_at=jwt.expires_at,
             user=UserOutSchema(
-                id=user_id,
+                id=int(user_id),
                 username=username,
                 email=user.email,
                 is_superuser=user.is_superuser,
@@ -113,5 +113,6 @@ class AuthService:
 
         hashed_password = pwd_context.hash(data.password)
         return await self.user_repo.create(
-            data.dict(exclude="password"), hashed_password
+            data.model_dump(exclude="password"),
+            hashed_password,  # type: ignore
         )

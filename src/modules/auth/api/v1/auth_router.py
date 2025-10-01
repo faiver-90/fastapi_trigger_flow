@@ -10,7 +10,7 @@ from src.modules.auth.api.v1.schemas import (
     UserOutSchema,
 )
 from src.modules.auth.api.v1.services.auth_service import AuthService
-from src.shared.configs.decorators import log_action
+from src.shared.decorators import log_action
 from src.shared.deps.auth_dependencies import authenticate_user
 
 v1_auth = APIRouter(prefix="/auth", tags=["Authentication, authorisation"])
@@ -38,8 +38,8 @@ async def login(
 ):
     try:
         username = token_data.username
-        token_data = await service.login(username, token_data.password)
-        return token_data
+        login_response = await service.login(username, token_data.password)
+        return login_response
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{e}") from e
 
