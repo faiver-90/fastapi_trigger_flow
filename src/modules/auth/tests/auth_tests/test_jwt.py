@@ -4,14 +4,14 @@ import pytest
 from jose import JWTError, jwt
 
 from src.modules.auth.api.v1.schemas import JWTCreateSchema
-from src.modules.auth.api.v1.services.jwt_service import (
+from src.modules.auth.repositories.jwt_repo import JWTRepo
+from src.shared.db.models.auth import RefreshToken
+from src.shared.services.jwt_service import (
     create_access_token,
     create_refresh_token,
     create_token,
     decode_token,
 )
-from src.modules.auth.repositories.jwt_repo import JWTRepo
-from src.shared.db.models.auth import RefreshToken
 
 SECRET_KEY = "secret"
 ALGORITHM = "HS256"

@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from src.modules.auth.api.v1.services.jwt_service import create_token
+from src.shared.services.jwt_service import create_token
 
 
 def test_authenticate_user_valid_token(sync_client):

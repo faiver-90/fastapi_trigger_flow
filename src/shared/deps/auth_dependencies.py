@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 
-from src.modules.auth.api.v1.services.jwt_service import decode_token
+from src.shared.services.jwt_service import decode_token
 
 token_scheme = HTTPBearer()
 

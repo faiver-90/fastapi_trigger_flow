@@ -6,14 +6,14 @@ from src.modules.auth.api.v1.schemas import (
     UserCreateSchema,
     UserOutSchema,
 )
-from src.modules.auth.api.v1.services.jwt_service import (
-    create_access_token,
-    create_refresh_token,
-)
 from src.modules.auth.configs.crypt_conf import pwd_context
 from src.modules.auth.configs.jwt_conf import ACCESS_EXPIRE_MIN
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
+from src.shared.services.jwt_service import (
+    create_access_token,
+    create_refresh_token,
+)
 from src.shared.services.redis_service import RedisService
 
 auth_logger = logging.getLogger("auth")
