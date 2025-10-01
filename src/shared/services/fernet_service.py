@@ -1,4 +1,3 @@
-
 from cryptography.fernet import Fernet, InvalidToken
 
 from src.shared.configs.settings import settings

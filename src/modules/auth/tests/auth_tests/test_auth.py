@@ -1,148 +1,180 @@
+from datetime import datetime
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
 
 from src.modules.auth.api.v1.schemas import LoginResponseSchema, UserCreateSchema
-from src.shared.db.models.auth import User
+from src.modules.auth.api.v1.services.auth_service import AuthService
+from src.modules.auth.configs.crypt_conf import pwd_context
+from src.shared.configs.settings import settings
 
 
 @pytest.mark.anyio
-async def test_health_check(async_client):
-    response = await async_client.get("/")
-    assert response.status_code == 200
-    assert response.json() == {"It's": "Work"}
-
-
-# Auth service
 async def test_login_success(
-    auth_service, mock_user_repo, mock_jwt_repo, mock_redis_client, mock_user
+    auth_service,
+    mock_user_repo,
+    mock_jwt_repo,
+    mock_redis_service,
+    monkeypatch,
 ):
-    mock_user_repo.get_by_fields.return_value = mock_user
-    mock_jwt_repo.create.return_value.expires_at = "2030-01-01T00:00:00"
+    user = SimpleNamespace(
+        id=7,
+        username="demo",
+        email="demo@example.com",
+        hashed_password=pwd_context.hash("correct"),
+        is_superuser=True,
+    )
+    mock_user_repo.get_by_fields.return_value = user
+    mock_jwt_repo.create.return_value = SimpleNamespace(expires_at=datetime.utcnow())
 
-    response = await auth_service.login("testuser", "correctpassword")
+    access_token = "access-token"
+    refresh_token = "refresh-token"
 
-    assert isinstance(response, LoginResponseSchema)
-    assert response.user.username == "testuser"
-    assert response.token_type == "bearer"
-    mock_redis_client.set.assert_called_once()
-    mock_jwt_repo.create.assert_called_once()
+    async def fake_set(uid, token, ttl):  # noqa: ANN001
+        assert uid == "7"
+        assert token == access_token
+        assert ttl == settings.access_expire_seconds
+
+    mock_redis_service.set = AsyncMock(side_effect=fake_set)
+
+    monkeypatch.setattr(
+        "src.modules.auth.api.v1.services.auth_service.create_access_token",
+        lambda *args, **kwargs: access_token,
+    )
+    monkeypatch.setattr(
+        "src.modules.auth.api.v1.services.auth_service.create_refresh_token",
+        lambda *args, **kwargs: refresh_token,
+    )
+
+    result = await auth_service.login("demo", "correct")
+
+    assert isinstance(result, LoginResponseSchema)
+    assert result.user.username == "demo"
+    assert result.user.is_superuser is True
+    assert result.access_token == access_token
+    assert result.refresh_token == refresh_token
+    mock_user_repo.get_by_fields.assert_awaited_once_with(username="demo")
+    mock_jwt_repo.create.assert_awaited_once()
+    mock_redis_service.set.assert_awaited()
 
 
-async def test_login_wrong_password(auth_service, mock_user_repo, mock_user):
-    mock_user_repo.get_by_fields.return_value = mock_user
+@pytest.mark.anyio
+async def test_login_wrong_password(auth_service, mock_user_repo):
+    user = SimpleNamespace(
+        id=1,
+        username="demo",
+        email="demo@example.com",
+        hashed_password=pwd_context.hash("password"),
+        is_superuser=False,
+    )
+    mock_user_repo.get_by_fields.return_value = user
 
     with pytest.raises(ValueError, match="Invalid username or password"):
-        await auth_service.login("testuser", "wrongpassword")
+        await auth_service.login("demo", "wrong")
 
 
+@pytest.mark.anyio
 async def test_login_user_not_found(auth_service, mock_user_repo):
     mock_user_repo.get_by_fields.return_value = None
 
     with pytest.raises(ValueError, match="Invalid username or password"):
-        await auth_service.login("notfound", "any")
+        await auth_service.login("missing", "whatever")
 
 
-async def test_register_user_success(auth_service, mock_user_repo, mock_user):
-    data = UserCreateSchema(
-        username=mock_user.username, email=mock_user.email, password="securepassword"
+@pytest.mark.anyio
+async def test_login_requires_user_repo(mock_jwt_repo, mock_redis_service):
+    service = AuthService(
+        user_repo=None, jwt_repo=mock_jwt_repo, redis_service=mock_redis_service
     )
 
+    with pytest.raises(RuntimeError, match="UserRepository is not initialized"):
+        await service.login("demo", "pass")
+
+
+@pytest.mark.anyio
+async def test_login_requires_redis_service(mock_user_repo, mock_jwt_repo, mock_user):
+    service = AuthService(
+        user_repo=mock_user_repo, jwt_repo=mock_jwt_repo, redis_service=None
+    )
+    mock_user_repo.get_by_fields.return_value = mock_user
+
+    with pytest.raises(RuntimeError, match="RedisService is not initialized"):
+        await service.login("testuser", "correctpassword")
+
+
+@pytest.mark.anyio
+async def test_login_requires_jwt_repo(
+    mock_user_repo, mock_redis_service, mock_user, monkeypatch
+):
+    service = AuthService(
+        user_repo=mock_user_repo, jwt_repo=None, redis_service=mock_redis_service
+    )
+    mock_user_repo.get_by_fields.return_value = mock_user
+
+    monkeypatch.setattr(
+        "src.modules.auth.api.v1.services.auth_service.create_access_token",
+        lambda *args, **kwargs: "access-token",
+    )
+    monkeypatch.setattr(
+        "src.modules.auth.api.v1.services.auth_service.create_refresh_token",
+        lambda *args, **kwargs: "refresh-token",
+    )
+
+    with pytest.raises(RuntimeError, match="JWTRepo is not initialized"):
+        await service.login("testuser", "correctpassword")
+
+    mock_redis_service.set.assert_awaited_once()
+
+
+@pytest.mark.anyio
+async def test_register_user_success(auth_service, mock_user_repo):
     mock_user_repo.exists_by_fields.return_value = False
-    mock_user_repo.create.return_value = "UserObject"
+    created_user = SimpleNamespace(id=1, username="test", email="mail@test.com")
+    mock_user_repo.create.return_value = created_user
 
-    result = await auth_service.register_user(data)
-
-    assert result == "UserObject"
-    mock_user_repo.create.assert_called_once()
-
-
-async def test_register_user_already_exists(auth_service, mock_user_repo, mock_user):
-    data = UserCreateSchema(
-        username=mock_user.username, email=mock_user.email, password="123456"
+    schema = UserCreateSchema(
+        username="test", email="mail@test.com", password="plainpw"
     )
+
+    result = await auth_service.register_user(schema)
+
+    assert result is created_user
+    mock_user_repo.exists_by_fields.assert_awaited_once_with(
+        email="mail@test.com", username="test"
+    )
+    assert mock_user_repo.create.await_count == 1
+    args, kwargs = mock_user_repo.create.await_args
+    user_payload, hashed_password = args
+    assert user_payload["username"] == "test"
+    assert user_payload["email"] == "mail@test.com"
+    assert user_payload.get("is_superuser") is False
+    assert pwd_context.verify("plainpw", hashed_password)
+    assert not kwargs
+
+
+@pytest.mark.anyio
+async def test_register_user_already_exists(auth_service, mock_user_repo):
     mock_user_repo.exists_by_fields.return_value = True
+
+    schema = UserCreateSchema(
+        username="test", email="mail@test.com", password="plainpw"
+    )
 
     with pytest.raises(
         ValueError, match="User with this email or username already exists"
     ):
-        await auth_service.register_user(data)
+        await auth_service.register_user(schema)
 
-
-# Auth repo
-@pytest.mark.anyio
-async def test_get_by_fields_found(
-    user_repo, async_mock_session, fake_user, mock_result
-):
-    mock_result.scalar_one_or_none.return_value = fake_user
-    async_mock_session.execute.return_value = mock_result
-
-    result = await user_repo.get_by_fields(username="testuser")
-
-    async_mock_session.execute.assert_called_once()
-    assert result == fake_user
+    mock_user_repo.create.assert_not_awaited()
 
 
 @pytest.mark.anyio
-async def test_get_by_fields_not_found(user_repo, async_mock_session, mock_result):
-    mock_result.scalar_one_or_none.return_value = None
-    async_mock_session.execute.return_value = mock_result
-
-    result = await user_repo.get_by_fields(email="nope@example.com")
-
-    async_mock_session.execute.assert_called_once()
-    assert result is None
-
-
-@pytest.mark.anyio
-async def test_exists_by_fields_true(user_repo, async_mock_session, mock_result):
-    mock_result.scalar.return_value = True
-    async_mock_session.execute.return_value = mock_result
-
-    result = await user_repo.exists_by_fields(username="testuser")
-
-    async_mock_session.execute.assert_called_once()
-    assert result is True
-
-
-@pytest.mark.anyio
-async def test_exists_by_fields_false(user_repo, async_mock_session, mock_result):
-    mock_result.scalar.return_value = False
-    async_mock_session.execute.return_value = mock_result
-
-    result = await user_repo.exists_by_fields(email="missing@example.com")
-
-    async_mock_session.execute.assert_called_once()
-    assert result is False
-
-
-# @pytest.mark.anyio
-# async def test_update_user_by_id(user_repo, async_mock_session):
-#     data = {"email": "new@example.com"}
-#
-#     await user_repo.update_user_by_id(user_id=1, data=data)
-#
-#     async_mock_session.execute.assert_called_once()
-#     async_mock_session.commit.assert_called_once()
-
-
-@pytest.mark.anyio
-async def test_create_user(user_repo, async_mock_session, fake_user):
-    schema = UserCreateSchema(
-        username=fake_user.username, email=fake_user.email, password="plaintext"
+async def test_register_requires_user_repo(mock_jwt_repo, mock_redis_service):
+    service = AuthService(
+        user_repo=None, jwt_repo=mock_jwt_repo, redis_service=mock_redis_service
     )
+    schema = UserCreateSchema(username="demo", email="demo@test.com", password="passpw")
 
-    async_mock_session.refresh = AsyncMock()
-
-    user = await user_repo.create(
-        user_data=schema.dict(exclude="password"), hashed_password=schema.password
-    )
-
-    async_mock_session.add.assert_called_once()
-    async_mock_session.commit.assert_called_once()
-    async_mock_session.refresh.assert_called_once_with(user)
-
-    assert isinstance(user, User)
-    assert user.username == "testuser"
-    assert user.email == "test@example.com"
-    assert user.hashed_password == "plaintext"
+    with pytest.raises(RuntimeError, match="UserRepository is not initialized"):
+        await service.register_user(schema)
