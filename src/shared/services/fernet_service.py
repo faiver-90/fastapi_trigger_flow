@@ -1,9 +1,7 @@
-import os
 
 from cryptography.fernet import Fernet, InvalidToken
-from dotenv import load_dotenv
 
-load_dotenv()
+from src.shared.configs.settings import settings
 
 
 class FernetService:
@@ -11,7 +9,8 @@ class FernetService:
         """
         :param fernet_key: Ключ в виде строки. Если None, берется из FERNET_KEY.
         """
-        key = os.getenv("FERNET_KEY", fernet_key)
+        key = settings.fernet_key
+
         if not key:
             raise ValueError(
                 "Fernet key not specified (neither in argument nor in FERNET_KEY)"

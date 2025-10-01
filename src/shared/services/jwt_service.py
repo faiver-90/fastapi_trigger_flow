@@ -2,12 +2,7 @@ from datetime import datetime, timedelta
 
 from jose import jwt
 
-from src.modules.auth.configs.jwt_conf import (
-    ACCESS_EXPIRE_MIN,
-    ALGORITHM,
-    REFRESH_EXPIRE_DAYS,
-    SECRET_KEY,
-)
+from src.shared.configs.settings import settings
 
 
 def create_token(data: dict, expires_delta: timedelta) -> str:
@@ -24,7 +19,7 @@ def create_token(data: dict, expires_delta: timedelta) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode["exp"] = expire
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
 
 def create_access_token(user_id: str, **data):
@@ -39,7 +34,9 @@ def create_access_token(user_id: str, **data):
         str: Access токен.
     """
 
-    return create_token({"sub": user_id, **data}, timedelta(minutes=ACCESS_EXPIRE_MIN))
+    return create_token(
+        {"sub": user_id, **data}, timedelta(minutes=settings.access_expire_min)
+    )
 
 
 def create_refresh_token(user_id: str, **data):
@@ -53,7 +50,9 @@ def create_refresh_token(user_id: str, **data):
     Returns:
         str: Refresh токен.
     """
-    return create_token({"sub": user_id, **data}, timedelta(days=REFRESH_EXPIRE_DAYS))
+    return create_token(
+        {"sub": user_id, **data}, timedelta(days=settings.refresh_expire_days)
+    )
 
 
 def decode_token(token: str):
@@ -69,4 +68,4 @@ def decode_token(token: str):
     Raises:
         JWTError: Если токен недействителен или истёк.
     """
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])

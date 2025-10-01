@@ -7,9 +7,9 @@ from src.modules.auth.api.v1.schemas import (
     UserOutSchema,
 )
 from src.modules.auth.configs.crypt_conf import pwd_context
-from src.modules.auth.configs.jwt_conf import ACCESS_EXPIRE_MIN
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
+from src.shared.configs.settings import settings
 from src.shared.services.jwt_service import (
     create_access_token,
     create_refresh_token,
@@ -77,7 +77,7 @@ class AuthService:
             errors_logger.error("RedisService is not initialized")
             raise RuntimeError("RedisService is not initialized")
 
-        await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)
+        await self.redis_client.set(user_id, access, settings.access_expire_seconds)
 
         if self.jwt_repo is None:
             errors_logger.error("JWTRepo is not initialized")

@@ -1,28 +1,25 @@
-import os
 from email.message import EmailMessage
 
 import aiosmtplib
-from dotenv import load_dotenv
 
 from src.modules.notifications.types.base_type_notify_class import (
     BaseTypeNotificationClass,
 )
-
-load_dotenv()
+from src.shared.configs.settings import settings
 
 
 class EmailNotification(BaseTypeNotificationClass):
     """
     Сервис отправки email по SMTP.
-    Шаблон письма встроен. Конфигурация (кому и с какими данными) приходит из БД.
+    Конфигурация берётся из глобальных настроек приложения (settings).
     """
 
     def __init__(self):
-        self.smtp_host = os.getenv("SMTP_HOST")
-        self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
-        self.smtp_user = os.getenv("SMTP_USERNAME")
-        self.smtp_pass = os.getenv("SMTP_PASSWORD")
-        self.from_email = os.getenv("FROM_EMAIL", self.smtp_user)
+        self.smtp_host = settings.smtp_host
+        self.smtp_port = settings.smtp_port
+        self.smtp_user = settings.smtp_username
+        self.smtp_pass = settings.smtp_password
+        self.from_email = settings.from_email or self.smtp_user
 
     async def send(self, payload: dict, config: dict):
         """
@@ -33,17 +30,20 @@ class EmailNotification(BaseTypeNotificationClass):
                     "email": "user@example.com"
                 }
         """
+        if not self.smtp_host:
+            print("[!] SMTP host is not configured")
+            return
+
         recipient = config.get("email")
         if not recipient:
             print("[!] Email is not specified in config")
             return
 
-        # Шаблон письма внутри
         subject = "Оповещение от trigger flow"
         body = f"{payload}, {config}"
 
         message = EmailMessage()
-        message["From"] = self.from_email
+        message["From"] = self.from_email or ""
         message["To"] = recipient
         message["Subject"] = subject
         message.set_content(body)
@@ -58,8 +58,8 @@ class EmailNotification(BaseTypeNotificationClass):
                 start_tls=True,
             )
             print(f"[+] Email was send: {recipient}")
-        except Exception as e:
-            print(f"[!] Error sending email: {e}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[!] Error sending email: {exc}")
 
     def describe(self) -> dict:
         return {

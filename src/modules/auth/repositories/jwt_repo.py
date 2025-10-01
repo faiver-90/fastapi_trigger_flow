@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.modules.auth.api.v1.schemas import JWTCreateSchema
-from src.modules.auth.configs.jwt_conf import REFRESH_EXPIRE_DAYS
+from src.shared.configs.settings import settings
 from src.shared.db.models.auth import RefreshToken
 
 
@@ -31,7 +31,9 @@ class JWTRepo:
         Returns:
             RefreshToken: Созданный токен.
         """
-        expires_at = datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS)
+        expires_at = (
+            datetime.now(timezone.utc) + timedelta(days=settings.refresh_expire_days)
+        ).replace(tzinfo=None)
 
         jwt = RefreshToken(
             user_id=jwt_data.user_id,
