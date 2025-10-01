@@ -73,7 +73,11 @@ class AuthService:
         access = create_access_token(user_id, **jwt_data)
         refresh = create_refresh_token(user_id, **jwt_data)
 
-        await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)  # type: ignore
+        if self.redis_client is None:
+            errors_logger.error("RedisService is not initialized")
+            raise RuntimeError("RedisService is not initialized")
+
+        await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)
 
         if self.jwt_repo is None:
             errors_logger.error("JWTRepo is not initialized")
