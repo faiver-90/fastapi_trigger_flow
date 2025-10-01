@@ -54,7 +54,7 @@ asyncio_mode = "auto"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 ignore = ["E501", "B008"]
-fixable = ["ALL"]
+fixable = ["ALL", "I"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]

@@ -10,11 +10,11 @@ from src.modules.auth.api.v1.services.jwt_service import (
     create_access_token,
     create_refresh_token,
 )
-from src.modules.auth.api.v1.services.redis_service import RedisService
 from src.modules.auth.configs.crypt_conf import pwd_context
 from src.modules.auth.configs.jwt_conf import ACCESS_EXPIRE_MIN
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
+from src.shared.services.redis_service import RedisService
 
 auth_logger = logging.getLogger("auth")
 errors_logger = logging.getLogger("errors")
@@ -70,7 +70,7 @@ class AuthService:
         access = create_access_token(user_id, **jwt_data)
         refresh = create_refresh_token(user_id, **jwt_data)
 
-        await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)
+        await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)  # type: ignore
 
         jwt = await self.jwt_repo.create(
             JWTCreateSchema(user_id=int(user_id), token=refresh)
@@ -113,6 +113,6 @@ class AuthService:
 
         hashed_password = pwd_context.hash(data.password)
         return await self.user_repo.create(
-            data.model_dump(exclude="password"),
-            hashed_password,  # type: ignore
+            data.model_dump(exclude="password"),  # type: ignore
+            hashed_password,
         )
