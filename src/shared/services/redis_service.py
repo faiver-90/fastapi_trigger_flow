@@ -6,14 +6,14 @@ class RedisService:
     Сервис для работы с Redis — используется для хранения access токенов.
     """
 
-    def __init__(self, url: str):
+    def __init__(self, client: redis.Redis):
         """
         Инициализация Redis клиента.
 
         Args:
             url (str): URL подключения к Redis.
         """
-        self.client = redis.from_url(url, decode_responses=True)
+        self.client = client
 
     async def get(self, key: str) -> str | None:
         """
@@ -60,4 +60,4 @@ class RedisService:
         return await self.client.exists(key) == 1
 
 
-redis_service = RedisService(url="redis://redis:6379/0")
+# redis_service = RedisService(url="redis://redis:6379/0")

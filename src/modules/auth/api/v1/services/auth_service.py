@@ -27,9 +27,9 @@ class AuthService:
 
     def __init__(
         self,
-        user_repo: UserRepository = None,
-        jwt_repo: JWTRepo = None,
-        redis_client: RedisService = None,
+        user_repo: UserRepository | None = None,
+        jwt_repo: JWTRepo | None = None,
+        redis_service: RedisService | None = None,
     ):
         """
         Инициализация сервиса.
@@ -41,7 +41,7 @@ class AuthService:
         """
         self.user_repo = user_repo
         self.jwt_repo = jwt_repo
-        self.redis_client = redis_client
+        self.redis_client = redis_service
 
     async def login(self, username: str, password: str):
         """
@@ -57,6 +57,9 @@ class AuthService:
         Raises:
             ValueError: Если логин или пароль неверные.
         """
+        if self.user_repo is None:
+            errors_logger.error("UserRepository is not initialized")
+            raise RuntimeError("UserRepository is not initialized")
         user = await self.user_repo.get_by_fields(username=username)
 
         if not user or not pwd_context.verify(password, user.hashed_password):
@@ -71,6 +74,10 @@ class AuthService:
         refresh = create_refresh_token(user_id, **jwt_data)
 
         await self.redis_client.set(user_id, access, 60 * ACCESS_EXPIRE_MIN)  # type: ignore
+
+        if self.jwt_repo is None:
+            errors_logger.error("JWTRepo is not initialized")
+            raise RuntimeError("JWTRepo is not initialized")
 
         jwt = await self.jwt_repo.create(
             JWTCreateSchema(user_id=int(user_id), token=refresh)
@@ -102,6 +109,10 @@ class AuthService:
         Raises:
             ValueError: Если пользователь с таким email или username уже существует.
         """
+        if self.user_repo is None:
+            errors_logger.error("UserRepository is not initialized")
+            raise RuntimeError("UserRepository is not initialized")
+
         existing_user = await self.user_repo.exists_by_fields(
             email=data.email, username=data.username
         )

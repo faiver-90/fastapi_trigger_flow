@@ -100,7 +100,9 @@ def mock_redis_client():
 @pytest.fixture(scope="function")
 def auth_service(mock_user_repo, mock_jwt_repo, mock_redis_client):
     return AuthService(
-        user_repo=mock_user_repo, jwt_repo=mock_jwt_repo, redis_client=mock_redis_client
+        user_repo=mock_user_repo,
+        jwt_repo=mock_jwt_repo,
+        redis_service=mock_redis_client,
     )
 
 

@@ -39,7 +39,9 @@ def create_access_token(user_id: str, **data):
         str: Access токен.
     """
 
-    return create_token({"sub": user_id, **data}, timedelta(minutes=ACCESS_EXPIRE_MIN))
+    return create_token(
+        {"sub": user_id, **data}, timedelta(minutes=float(ACCESS_EXPIRE_MIN))
+    )
 
 
 def create_refresh_token(user_id: str, **data):
@@ -53,7 +55,9 @@ def create_refresh_token(user_id: str, **data):
     Returns:
         str: Refresh токен.
     """
-    return create_token({"sub": user_id, **data}, timedelta(days=REFRESH_EXPIRE_DAYS))
+    return create_token(
+        {"sub": user_id, **data}, timedelta(days=float(REFRESH_EXPIRE_DAYS))
+    )
 
 
 def decode_token(token: str):
