@@ -73,7 +73,7 @@ class Settings(BaseSettings):
     default_redis_url: str = Field(
         "redis://localhost:6379/0", alias="DEFAULT_REDIS_URL"
     )
-    redis_url_env: str = Field("redis://redis:6379/0", alias="REDIS_URL_ENV")
+    redis_url_env: str = Field("redis://localhost:6379/0", alias="REDIS_URL_ENV")
     celery_broker_url: str = Field(
         "redis://localhost:6379/0", alias="CELERY_BROKER_URL"
     )
