@@ -7,8 +7,8 @@ from fastapi.responses import JSONResponse
 logger = logging.getLogger(__name__)
 
 
-# Обработка ошибок валидации (422)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Сформировать ответ для ошибок валидации запросов (HTTP 422)."""
     logger.warning(f"[422] Validation error on {request.url}: {exc.errors()}")
     return JSONResponse(
         status_code=422,
@@ -21,8 +21,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-# Обработка HTTP ошибок (raise HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
+    """Преобразовать `HTTPException` в унифицированный JSON-ответ."""
     logger.warning(f"[{exc.status_code}] HTTPException on {request.url}: {exc.detail}")
     return JSONResponse(
         status_code=exc.status_code,
@@ -34,8 +34,8 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
-# Обработка всех других исключений
 async def generic_exception_handler(request: Request, exc: Exception):
+    """Обработать непредвиденные ошибки и вернуть ответ 500."""
     logger.exception(f"[500] Unhandled exception on {request.url}: {str(exc)}")
     return JSONResponse(
         status_code=500,

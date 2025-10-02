@@ -15,6 +15,16 @@ async def get_auth_service(
     db: AsyncSession = Depends(get_async_session),
     redis_service: RedisService = Depends(get_redis_service),
 ) -> AuthService:
+    """
+    Собрать экземпляр `AuthService` с инфраструктурными зависимостями.
+
+    Args:
+        db (AsyncSession): Асинхронная сессия базы данных.
+        redis_service (RedisService): Клиент Redis для хранения access токенов.
+
+    Returns:
+        AuthService: Готовый к использованию сервис авторизации.
+    """
     return AuthService(
         user_repo=UserRepository(db),
         jwt_repo=JWTRepo(db),

@@ -53,4 +53,5 @@ async def verify_superuser(payload: dict = Depends(authenticate_user)):
 
 
 async def get_user_id(user: dict = Depends(authenticate_user)) -> int:
+    """Извлечь идентификатор пользователя из расшифрованного JWT payload."""
     return int(user["sub"])

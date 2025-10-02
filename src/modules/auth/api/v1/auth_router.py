@@ -20,6 +20,7 @@ auth_logger = logging.getLogger("auth_log")
 
 @v1_auth.get("/me", summary="Получить данные текущего пользователя")
 async def get_current_user(payload: dict = Depends(authenticate_user)):
+    """Вернуть информацию о текущем пользователе из JWT payload."""
     return {
         "user_id": payload.get("sub"),
         "is_superuser": payload.get("is_superuser"),
@@ -36,6 +37,19 @@ async def get_current_user(payload: dict = Depends(authenticate_user)):
 async def login(
     token_data: AuthInSchema, service: AuthService = Depends(get_auth_service)
 ):
+    """
+    Выполнить вход пользователя и вернуть пару токенов и профиль.
+
+    Args:
+        token_data (AuthInSchema): Учётные данные пользователя.
+        service (AuthService): Сервис авторизации.
+
+    Returns:
+        LoginResponseSchema: Access/refresh токены и данные пользователя.
+
+    Raises:
+        HTTPException: Если авторизация завершилась ошибкой сервиса.
+    """
     try:
         username = token_data.username
         login_response = await service.login(username, token_data.password)
@@ -55,6 +69,19 @@ async def login(
 async def register(
     data: UserCreateSchema, service: AuthService = Depends(get_auth_service)
 ):
+    """
+    Зарегистрировать нового пользователя и вернуть созданный профиль.
+
+    Args:
+        data (UserCreateSchema): Данные для регистрации.
+        service (AuthService): Сервис авторизации.
+
+    Returns:
+        UserOutSchema: Данные созданного пользователя.
+
+    Raises:
+        HTTPException: Если внутренняя бизнес-логика завершилась ошибкой.
+    """
     try:
         user = await service.register_user(data)
 

@@ -37,9 +37,11 @@ class AuthService:
         Инициализация сервиса.
 
         Args:
-            user_repo (UserRepository): Репозиторий пользователей.
-            jwt_repo (JWTRepo): Репозиторий JWT токенов.
-            redis_client (RedisService): Клиент Redis для хранения access токенов.
+            user_repo (UserRepository | None): Репозиторий пользователей.
+            jwt_repo (JWTRepo | None): Репозиторий refresh токенов.
+            redis_service (RedisService | None): Клиент Redis для хранения access токенов.
+            settings (Settings | None): Настройки приложения. Если не
+                переданы, подставляются глобальные.
         """
         self.user_repo = user_repo
         self.jwt_repo = jwt_repo
@@ -59,6 +61,7 @@ class AuthService:
 
         Raises:
             ValueError: Если логин или пароль неверные.
+            RuntimeError: Если зависимость не инициализирована.
         """
         if self.user_repo is None:
             errors_logger.error("UserRepository is not initialized")
@@ -117,6 +120,7 @@ class AuthService:
 
         Raises:
             ValueError: Если пользователь с таким email или username уже существует.
+            RuntimeError: Если репозиторий пользователей не инициализирован.
         """
         if self.user_repo is None:
             errors_logger.error("UserRepository is not initialized")

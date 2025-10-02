@@ -12,6 +12,24 @@ async def send_request(
     timeout=5.0,
     **kwargs,
 ):
+    """
+    Отправить HTTP-запрос и обернуть ошибки в `HTTPException`.
+
+    Args:
+        method (str): HTTP-метод.
+        url (str): Адрес запроса.
+        json: Тело запроса в формате JSON.
+        params: Query-параметры.
+        headers: Пользовательские заголовки.
+        timeout (float): Таймаут ожидания ответа.
+        **kwargs: Дополнительные параметры клиента `httpx`.
+
+    Returns:
+        httpx.Response: Ответ удалённого сервиса.
+
+    Raises:
+        HTTPException: При сетевых проблемах или ошибочном статусе.
+    """
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.request(
