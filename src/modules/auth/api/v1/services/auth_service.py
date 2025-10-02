@@ -9,7 +9,8 @@ from src.modules.auth.api.v1.schemas import (
 from src.modules.auth.configs.crypt_conf import pwd_context
 from src.modules.auth.repositories.jwt_repo import JWTRepo
 from src.modules.auth.repositories.user_repo import UserRepository
-from src.shared.configs.settings import settings
+from src.shared.configs.get_settings import get_settings
+from src.shared.configs.settings import Settings
 from src.shared.services.jwt_service import (
     create_access_token,
     create_refresh_token,
@@ -30,6 +31,7 @@ class AuthService:
         user_repo: UserRepository | None = None,
         jwt_repo: JWTRepo | None = None,
         redis_service: RedisService | None = None,
+        settings: Settings | None = None,
     ):
         """
         Инициализация сервиса.
@@ -42,6 +44,7 @@ class AuthService:
         self.user_repo = user_repo
         self.jwt_repo = jwt_repo
         self.redis_client = redis_service
+        self.settings = settings or get_settings()
 
     async def login(self, username: str, password: str):
         """
@@ -77,7 +80,9 @@ class AuthService:
             errors_logger.error("RedisService is not initialized")
             raise RuntimeError("RedisService is not initialized")
 
-        await self.redis_client.set(user_id, access, settings.access_expire_seconds)
+        await self.redis_client.set(
+            user_id, access, self.settings.access_expire_seconds
+        )
 
         if self.jwt_repo is None:
             errors_logger.error("JWTRepo is not initialized")

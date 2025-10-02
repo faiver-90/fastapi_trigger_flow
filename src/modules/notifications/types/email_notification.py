@@ -5,7 +5,9 @@ import aiosmtplib
 from src.modules.notifications.types.base_type_notify_class import (
     BaseTypeNotificationClass,
 )
-from src.shared.configs.settings import settings
+from src.shared.configs.get_settings import get_settings
+
+settings = get_settings()
 
 
 class EmailNotification(BaseTypeNotificationClass):

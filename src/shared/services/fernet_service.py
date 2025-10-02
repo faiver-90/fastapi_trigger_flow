@@ -1,10 +1,12 @@
 from cryptography.fernet import Fernet, InvalidToken
 
-from src.shared.configs.settings import settings
+from src.shared.configs.get_settings import get_settings
+
+settings = get_settings()
 
 
 class FernetService:
-    def __init__(self, fernet_key: str = None):
+    def __init__(self, fernet_key: str = None):  # type: ignore
         """
         :param fernet_key: Ключ в виде строки. Если None, берется из FERNET_KEY.
         """

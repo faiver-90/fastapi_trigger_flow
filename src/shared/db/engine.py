@@ -1,8 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.shared.configs.settings import settings
+from src.shared.configs.get_settings import get_settings
 
+settings = get_settings()
 # --- Асинхронный движок (для FastAPI) ---
 async_engine = create_async_engine(
     settings.database_url,  #  type: ignore[misc]

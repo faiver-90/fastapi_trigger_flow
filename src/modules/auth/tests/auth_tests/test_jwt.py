@@ -5,13 +5,15 @@ from jose import JWTError, jwt
 
 from src.modules.auth.api.v1.schemas import JWTCreateSchema
 from src.modules.auth.repositories.jwt_repo import JWTRepo
-from src.shared.configs.settings import settings
+from src.shared.configs.get_settings import get_settings
 from src.shared.services.jwt_service import (
     create_access_token,
     create_refresh_token,
     create_token,
     decode_token,
 )
+
+settings = get_settings()
 
 
 @pytest.mark.anyio

@@ -7,7 +7,9 @@ import pytest
 from src.modules.auth.api.v1.schemas import LoginResponseSchema, UserCreateSchema
 from src.modules.auth.api.v1.services.auth_service import AuthService
 from src.modules.auth.configs.crypt_conf import pwd_context
-from src.shared.configs.settings import settings
+from src.shared.configs.get_settings import get_settings
+
+settings = get_settings()
 
 
 @pytest.mark.anyio

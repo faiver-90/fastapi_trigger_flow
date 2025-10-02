@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 
 from jose import jwt
 
-from src.shared.configs.settings import settings
+from src.shared.configs.get_settings import get_settings
+
+settings = get_settings()
 
 
 def create_token(data: dict, expires_delta: timedelta) -> str:
