@@ -1,21 +1,4 @@
 services:
-  rabbitmq:
-    container_name: rabbit
-    image: rabbitmq:3.12-management
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: appuser
-      RABBITMQ_DEFAULT_PASS: apppass
-      RABBITMQ_DEFAULT_VHOST: appvhost
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-
   redis:
     container_name: redis
     image: redis:7-alpine
@@ -32,14 +15,10 @@ services:
       poetry run celery -A src.shared.celery_module.celery_worker.celery_app worker -l info -Q default,notify_email,notify_tg,notify_sms"
     environment:
       PYTHONPATH: /app
-      RABBIT_HOST: rabbitmq
-      RABBIT_USER: appuser
-      RABBIT_PASS: apppass
-      RABBIT_VHOST: appvhost
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
     depends_on:
-      rabbitmq:
-        condition: service_healthy
       redis:
         condition: service_started
     volumes:
@@ -54,14 +33,10 @@ services:
       bash -c "poetry run celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
     environment:
       PYTHONPATH: /app
-      RABBIT_HOST: rabbitmq
-      RABBIT_USER: appuser
-      RABBIT_PASS: apppass
-      RABBIT_VHOST: appvhost
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
     depends_on:
-      rabbitmq:
-        condition: service_healthy
       redis:
         condition: service_started
     volumes:

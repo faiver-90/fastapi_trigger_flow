@@ -49,6 +49,10 @@ services:
     command: bash -c "
       pip install -r requirements.txt &&
       celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
     volumes:
       - ./:/app
     depends_on:
@@ -66,6 +70,10 @@ services:
     command: bash -c "
       pip install -r requirements.txt &&
       celery -A src.shared.celery_module.celery_worker.celery_app worker -l info"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
     volumes:
       - ./:/app
     depends_on:

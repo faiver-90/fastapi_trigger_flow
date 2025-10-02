@@ -12,6 +12,7 @@ from src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
 from src.modules.notifications.api.v1.router import v1_notification_router
 from src.modules.source.api.v1.router import v1_api_source
 from src.modules.trigger.api.v1.trigger_router import v1_trigger_router
+from src.shared.celery_module.celery_worker import celery_app
 from src.shared.configs.log_conf import setup_logger
 
 
@@ -42,6 +43,7 @@ def get_app() -> FastAPI:
         session: AsyncSession = Depends(get_async_session),
     ) -> dict[str, str]:
         try:
+            celery_app.send_task("sync_articles")
             await session.execute(text("SELECT 1"))
             return {"status": "ok", "database": "connected"}
         except SQLAlchemyError as e:

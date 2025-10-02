@@ -74,6 +74,12 @@ class Settings(BaseSettings):
         "redis://localhost:6379/0", alias="DEFAULT_REDIS_URL"
     )
     redis_url_env: str = Field("redis://redis:6379/0", alias="REDIS_URL_ENV")
+    celery_broker_url: str = Field(
+        "redis://localhost:6379/0", alias="CELERY_BROKER_URL"
+    )
+    celery_result_backend: str = Field(
+        "redis://localhost:6379/1", alias="CELERY_RESULT_BACKEND"
+    )
 
     # === External APIs ===
     api_key_openweathermap: str | None = Field(None, alias="API_KEY_OPENWEATHERMAP")
