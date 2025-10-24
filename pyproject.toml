@@ -8,7 +8,7 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.13,<3.14"
+python = "^3.12"
 fastapi = "^0.116.1"
 redis = "^6.3.0"
 httpx = "^0.28.1"
@@ -29,6 +29,7 @@ pydantic = { extras = ["email"], version = "^2.11.7" }
 python-json-logger = "^3.3.0"
 bcrypt = ">=4.0,<4.2"
 pydantic-settings = "^2.11.0"
+mypy = "^1.18.2"
 
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.16.4"
@@ -71,3 +72,8 @@ line-ending = "auto"
 [tool.black]
 line-length = 88
 target-version = ["py311"]
+
+
+[tool.mypy]
+explicit_package_bases = true
+ignore_missing_imports = true

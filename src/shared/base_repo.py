@@ -1,3 +1,5 @@
+import builtins
+from collections.abc import Iterable
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
@@ -62,3 +64,14 @@ class BaseRepository(Generic[ModelType]):
         await self.session.delete(obj)
         await self.session.commit()
         return True
+
+    async def create_many(
+        self, data: Iterable[BaseModel | dict]
+    ) -> builtins.list[BaseModel]:
+        objs: list[BaseModel] = []
+        for item in data:
+            payload = item.model_dump() if isinstance(item, BaseModel) else item
+            objs.append(self.model(**payload))
+        self.session.add_all(objs)
+        await self.session.commit()
+        return objs
