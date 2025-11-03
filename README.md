@@ -1,107 +1,63 @@
-# trigger_flow
+# FastAPI + Kind (Kubernetes) с пробросом 8080/8443
 
-## Общая идея
-
-trigger_flow — это веб-сервис, который позволяет пользователям подключать внешние API, отслеживать события и настраивать уведомления.  
-Проект подходит для автоматизации обработки данных и гибкой настройки уведомлений по заданным условиям.
-
----
-
-## Функциональные возможности
-
-### Аутентификация и авторизация
-
-- Регистрация и вход (JWT-токены, сессии)
-- Роли и права доступа
-
-### Источники данных
-
-- CRUD API для добавления источников
-- Шифрование токенов
-- Проверка связей
-
-### Подписки и триггеры
-
-- CRUD для триггеров
-- Настройка условий (например, температура > 25)
-- Гибкие расписания
-
-### Уведомления
-
-- Email через SMTP
-- Telegram Bot API
-- Webhook
-- Логирование отправок
-
-### Дашборд
-
-- Список триггеров и уведомлений
-- CRUD для подписок
-
----
-
-## Нефункциональные требования
-
-- PostgreSQL
-- Docker и docker-compose
-- Логирование (файлы/база)
-- Конфигурация через .env
-- Swagger/OpenAPI для документации
-- Покрытие тестами (Pytest, >60%)
-- CI/CD (GitHub Actions или GitLab CI)
-- Статический анализ кода (black, flake8)
-
----
-
-## Этапы разработки
-
-### Этап 1: Проектирование и подготовка окружения
-
-- Архитектура, ER-диаграммы
-- Настройка репозитория и CI/CD пайплайнов
-- Docker-окружение
-- Инициализация проекта Django или FastAPI
-
-### Этап 2: Базовая авторизация и CRUD
-
-- JWT/сессии
-- Пользователи и роли
-- CRUD для источников данных
-
-### Этап 3: Интеграция внешних API
-
-- Выбор внешних API (например, OpenWeather, GitHub)
-- Асинхронные запросы
-- Хранение и обновление данных
-
-### Этап 4: Настройка триггеров и подписок
-
-- Интерфейс условий и правил
-- Расписание через APScheduler или Celery
-- Логика срабатывания триггеров
-
-### Этап 5: Отправка уведомлений
-
-- Email, Telegram, Webhook
-- Логирование событий
-
-### Этап 6: Расширение и оптимизация
-
-- Кеширование (Redis)
-- Очереди задач (Celery)
-- Покрытие тестами
-- Swagger-документация
-
-### Этап 7: Завершение и защита
-
-- Подготовка финальной документации
-
----
-
-## Запуск проекта
-
-```bash
-docker-compose up --build 
+## Запуск
 ```
+# 0) кластер + ingress-nginx
+task remove_cluster
+kind create cluster --name dev --config kind-config.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+kubectl -n ingress-nginx wait --for=condition=Available --timeout=180s deploy/ingress-nginx-controller
 
-### Обязательное добавление всех бд в файл src/shared/db/__init__.py, для распознавания Alembic
+# 1) собери ОБРАЗ тем именем, что в deployment.yaml
+# если там web: app:local — собирай именно app:local
+docker build -t app/auth_service:local ./app/auth_service
+kind load docker-image app/auth_service:local --name dev
+
+
+# 2) база и секреты
+kubectl apply -f k8s/namespace.yaml
+kubectl -n app apply -f k8s/postgres/postgres-secret.yaml
+kubectl -n app apply -f k8s/postgres/postgres-svc.yaml
+kubectl -n app apply -f k8s/postgres/postgres-statefulset.yaml
+
+# дождись готовности БД
+kubectl -n app rollout status sts/postgres
+kubectl -n app get endpoints postgres
+
+# 3) миграции (Job)
+kubectl -n app apply -f k8s/postgres/alembic-migrations.yaml
+kubectl -n app logs -f job/alembic-upgrade
+
+# 4) приложение
+#kubectl -n app apply -f k8s/auth_service/deployment.yaml
+#kubectl -n app apply -f k8s/auth_service/service.yaml
+#kubectl -n app apply -f k8s/redis.yaml
+#kubectl apply -f k8s/ingress.yaml
+#kubectl -n app get ingress web
+
+kubectl apply -R -f k8s/
+
+kubectl -n app rollout status deploy/web
+
+# или kubectl -n app rollout status deploy
+
+# 5) проверка цепочки ingress → service → pod
+kubectl -n app get ingress web
+kubectl -n app get svc web
+kubectl -n app get endpoints web
+
+# health у тебя /health_check
+curl http://localhost:8080/health_check
+curl http://localhost:8080/swagger
+```
+## Для каждого нового сервиса пишется свой deploy, service и дописывается ingress
+# Быстрые диагностики
+# логи web
+kubectl -n app logs deploy/web
+
+# логи job
+kubectl -n app logs job/alembic-upgrade
+
+# локальная проверка без ingress
+kubectl -n app port-forward deploy/web 8001:8001
+curl http://127.0.0.1:8001/health_check

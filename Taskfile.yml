@@ -1,122 +1,50 @@
 version: "3"
-
 vars:
-  DC: docker compose
-  SRC: .
+  CLUSTER: dev
+  IMAGE: fastapi-kind:local
 
 tasks:
-  # ===== Docker =====
-  up:
-    desc: "Build (no cache) + up"
+  status:
     cmds:
-      - "{{.DC}} build --no-cache"
-      - "{{.DC}} up -d"
-
-  down:
-    desc: "Stop & remove containers"
+      - kubectl get pods -A
+      - kubectl get svc -A
+      - kubectl get ingress -A
+      - kubectl get nodes -A
+      - kubectl -n app describe deploy web
+  manifest:
+    desc:
+      "After change manifest"
     cmds:
-      - "{{.DC}} down"
+      - kubectl apply -R -f k8s/
 
-  re-all:
-    desc: "Full reset: down -v, prune, rebuild, up"
+  reload_pod:
+    desc:
+      "After change code"
     cmds:
-      - "{{.DC}} down -v --remove-orphans"
-      - "docker system prune -af --volumes"
-      - "{{.DC}} build --no-cache"
-      - "{{.DC}} up -d --force-recreate"
+      - docker build -t app:local .
+      - kind load docker-image app:local --name dev
+      - kubectl -n app rollout restart deploy/web
+      - kubectl -n app rollout status deploy/web
 
-  re-create:
-    desc: "Up with --force-recreate"
+  run_k9s:
+    desc: "k9s run"
     cmds:
-      - "{{.DC}} up -d --force-recreate"
+      - k9s -n app
 
-  # ===== Ruff =====
-  ruff-check:
-    desc: "Ruff check"
+  cluster-info:
+    desc: "cluster-info"
     cmds:
-      - "poetry run ruff check {{.SRC}}"
+      - kubectl cluster-info
 
-  ruff-fix:
-    desc: "Ruff fix (safe)"
-    cmds:
-      - "poetry run ruff check {{.SRC}} --fix"
-
-  ruff-fix-all:
-    desc: "Ruff fix (unsafe)"
-    cmds:
-      - "poetry run ruff check {{.SRC}} --fix --unsafe-fixes"
-
-  ruff-format:
-    desc: "Ruff format"
-    cmds:
-      - "poetry run ruff format {{.SRC}}"
-
-  ruff-format-check:
-    desc: "Ruff format --check"
-    cmds:
-      - "poetry run ruff format {{.SRC}} --check"
-
-  ruff-clean:
-    desc: "Remove .ruff_cache"
-    cmds:
-      - "rm -rf .ruff_cache"
-
-  lint:
-    desc: "Ruff fix + format"
-    deps: [ruff-fix, ruff-format]
-
-  # ===== Poetry / Alembic / Uvicorn =====
-  install:
-    desc: "poetry install"
-    cmds:
-      - "poetry install"
-
-  migrate:
-    desc: "alembic upgrade head"
-    cmds:
-      - "poetry run alembic upgrade head"
-
-  make_migration:
-    desc: "Create a new revision Alembic (autogenerate)"
-    vars:
-      MSG: '{{.CLI_ARGS}}'
-    preconditions:
-      - sh: 'test -n "{{.MSG}}"'
-        msg: 'Ошибка: не указан комментарий. Использование: task makemigration -- "комментарий"'
-    cmds:
-      - 'poetry run alembic revision --autogenerate -m "{{.MSG}}"'
-
-  run_web:
-    desc: "uvicorn dev server"
-    cmds:
-      - "poetry run uvicorn src.main_app.init_app:app --host 0.0.0.0 --port 8001 --reload"
-
-  up_web:
-    desc: "Check DB container, then install+migrate+run"
-    cmds:
-      - task: install
-      - task: migrate
-      - task: run_web
-
-  up_all:
-    desc: "Recreate containers + backend ready"
-    cmds:
-      - task: re-create
-      - task: install
-      - task: migrate
-      - task: run_web
-
-# ===== Git commit with Ruff + push =====
+    # ===== Git commit with Ruff + push =====
   commit:
-    desc: "Format with Ruff, commit with message, and push"
+    desc: "Commit and push"
     vars:
       MSG: '{{.CLI_ARGS}}'
     preconditions:
       - sh: 'test -n "{{.MSG}}"'
         msg: 'Ошибка: Не указан комментарий. Использование: task commit -- "комментарий"'
     cmds:
-      - "poetry run ruff format ."
-      - "poetry run ruff check . --fix"
       - "git add ."
       - 'git commit -m "{{.MSG}}" --no-verify'
       - "git push"

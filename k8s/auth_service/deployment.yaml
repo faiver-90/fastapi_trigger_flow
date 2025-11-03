@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: app/auth_service:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8001
+          # дополнение во внутренности containers[0] в deployment.yaml
+          env:
+            - name: POSTGRES_DB
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_DB } }
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_USER } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: postgres-secret, key: POSTGRES_PASSWORD } }
+            - name: POSTGRES_HOST
+              value: "postgres"                    # имя k8s-сервиса
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: DATABASE_URL                   # пример для asyncpg/psycopg
+              value: "postgresql+psycopg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+            - name: REDIS_URL
+              value: "redis://redis:6379/0"
+            - name: DEFAULT_REDIS_URL
+              value: "redis://redis:6379/0"
+            - name: REDIS_URL_ENV
+              value: "redis://redis:6379/0"
+          readinessProbe:
+            httpGet:
+              path: /health_check
+              port: 8001
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health_check
+              port: 8001
+            initialDelaySeconds: 10
+            periodSeconds: 10
