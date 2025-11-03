@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI(title="FastAPI on Kind 8080", version="0.1.0",
-              # root_path="/service-2"
+              root_path="/service-2"
               )
 
 class Echo(BaseModel):

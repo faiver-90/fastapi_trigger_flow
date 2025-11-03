@@ -9,10 +9,17 @@ spec:
     - host: localhost
       http:
         paths:
-          - path: /
+          - path: /auth
             pathType: Prefix
             backend:
               service:
-                name: web
+                name: auth
                 port:
-                  number: 80
+                  number: 8001
+          - path: /service-2
+            pathType: Prefix
+            backend:
+              service:
+                name: service-2
+                port:
+                  number: 8002

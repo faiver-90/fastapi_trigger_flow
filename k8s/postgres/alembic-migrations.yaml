@@ -15,7 +15,7 @@ spec:
           command: ['sh','-c','until nc -z postgres 5432; do sleep 1; done']
       containers:
         - name: migrator
-          image: app:local                  # образ с установленным alembic
+          image: app/auth:local                  # образ с установленным alembic
           imagePullPolicy: IfNotPresent
           workingDir: /app                  # где лежит ваш проект
           env:

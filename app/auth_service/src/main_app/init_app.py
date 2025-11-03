@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
 
 
 def get_app() -> FastAPI:
-    app_init = FastAPI(version="1.0.0", docs_url="/swagger", lifespan=lifespan)
+    app_init = FastAPI(version="1.0.0", docs_url="/swagger", lifespan=lifespan, root_path="/auth")
 
     from sqlalchemy import text
     from sqlalchemy.exc import SQLAlchemyError

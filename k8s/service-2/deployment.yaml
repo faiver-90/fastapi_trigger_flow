@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: service-2
   namespace: app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: service-2
   template:
     metadata:
       labels:
-        app: auth
+        app: service-2
     spec:
       containers:
-        - name: auth
-          image: app/auth:local
+        - name: service-2
+          image: app/service-2:local
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8001
+            - containerPort: 8002
           # дополнение во внутренности containers[0] в deployment.yaml
           env:
             - name: POSTGRES_DB
@@ -43,13 +43,13 @@ spec:
               value: "87279eb0f35d9ae526066256f90016b2"
           readinessProbe:
             httpGet:
-              path: /health_check
-              port: 8001
+              path: /health
+              port: 8002
             initialDelaySeconds: 3
             periodSeconds: 5
           livenessProbe:
             httpGet:
-              path: /health_check
-              port: 8001
+              path: /health
+              port: 8002
             initialDelaySeconds: 10
             periodSeconds: 10
