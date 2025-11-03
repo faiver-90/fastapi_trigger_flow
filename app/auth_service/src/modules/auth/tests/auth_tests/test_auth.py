@@ -4,10 +4,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.auth_service.src.modules.auth.api.v1.schemas import LoginResponseSchema, UserCreateSchema
-from app.auth_service.src.modules.auth.api.v1.services.auth_service import AuthService
-from app.auth_service.src.modules.auth.configs.crypt_conf import pwd_context
-from app.auth_service.src.shared.configs.get_settings import get_settings
+from src.modules.auth.api.v1.schemas import LoginResponseSchema, UserCreateSchema
+from src.modules.auth.api.v1.services.auth_service import AuthService
+from src.modules.auth.configs.crypt_conf import pwd_context
+from src.shared.configs.get_settings import get_settings
 
 settings = get_settings()
 

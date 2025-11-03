@@ -1,20 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.auth_service.src.modules.notifications.api.v1.get_service import (
+from src.modules.notifications.api.v1.get_service import (
     get_notification_service,
 )
-from app.auth_service.src.modules.notifications.api.v1.schemas import (
+from src.modules.notifications.api.v1.schemas import (
     NotificationCreate,
     NotificationOut,
     NotificationUpdate,
 )
-from app.auth_service.src.modules.notifications.services.notification_service import (
+from src.modules.notifications.services.notification_service import (
     CRUDNotificationService,
 )
-from app.auth_service.src.modules.notifications.types.notifications_types_registry import (
+from src.modules.notifications.types.notifications_types_registry import (
     NOTIFY_REGISTRY,
 )
-from app.auth_service.src.shared.deps.auth_dependencies import get_user_id
+from src.shared.deps.auth_dependencies import get_user_id
 
 v1_notification_router = APIRouter(
     prefix="/notification",

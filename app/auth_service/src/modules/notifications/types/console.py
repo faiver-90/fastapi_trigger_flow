@@ -1,4 +1,4 @@
-from app.auth_service.src.modules.notifications.types.base_type_notify_class import (
+from src.modules.notifications.types.base_type_notify_class import (
     BaseTypeNotificationClass,
 )
 

@@ -2,16 +2,16 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.auth_service.src.modules.auth.api.v1.deps.get_auth_service import get_auth_service
-from app.auth_service.src.modules.auth.api.v1.schemas import (
+from src.modules.auth.api.v1.deps.get_auth_service import get_auth_service
+from src.modules.auth.api.v1.schemas import (
     AuthInSchema,
     LoginResponseSchema,
     UserCreateSchema,
     UserOutSchema,
 )
-from app.auth_service.src.modules.auth.api.v1.services.auth_service import AuthService
-from app.auth_service.src.shared.decorators import log_action
-from app.auth_service.src.shared.deps.auth_dependencies import authenticate_user
+from src.modules.auth.api.v1.services.auth_service import AuthService
+from src.shared.decorators import log_action
+from src.shared.deps.auth_dependencies import authenticate_user
 
 v1_auth = APIRouter(prefix="/auth", tags=["Authentication, authorisation"])
 

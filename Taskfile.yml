@@ -4,6 +4,36 @@ vars:
   IMAGE: fastapi-kind:local
 
 tasks:
+  create_cluster:
+    desc: "Создать кластер kind с параметрами"
+    vars:
+      NAME: '{{.NAME | default "dev"}}'
+      CONFIG: '{{.CONFIG | default "kind-config.yaml"}}'
+    cmds:
+      - kind create cluster --name {{.NAME}} --config {{.CONFIG}}
+
+  remove_cluster:
+    desc: "Удаление кластера"
+    vars:
+      NAME: '{{.NAME | default "dev"}}'
+    cmds:
+      - kind delete cluster --name {{.NAME}}
+
+  deploy:
+    desc:
+      "After change yamls"
+    cmds:
+      - kubectl apply -f k8s/namespace.yaml
+      - kubectl apply -f k8s/deployment.yaml
+      - kubectl apply -f k8s/service.yaml
+      - kubectl apply -f k8s/ingress.yaml
+      - kubectl apply -f k8s/postgres-secret.yaml
+      - kubectl apply -f k8s/postgres-svc.yaml
+      - kubectl apply -f k8s/postgres-statefulset.yaml
+      - kubectl -n app rollout status deploy/web
+      - kubectl -n app get pods
+      - kubectl -n app describe deploy web
+
   status:
     cmds:
       - kubectl get pods -A
@@ -11,11 +41,7 @@ tasks:
       - kubectl get ingress -A
       - kubectl get nodes -A
       - kubectl -n app describe deploy web
-  manifest:
-    desc:
-      "After change manifest"
-    cmds:
-      - kubectl apply -R -f k8s/
+
 
   reload_pod:
     desc:
@@ -25,6 +51,11 @@ tasks:
       - kind load docker-image app:local --name dev
       - kubectl -n app rollout restart deploy/web
       - kubectl -n app rollout status deploy/web
+
+  install_k9s:
+    desc: "k9s install"
+    cmds:
+      - choco install -y k9s
 
   run_k9s:
     desc: "k9s run"
@@ -36,9 +67,8 @@ tasks:
     cmds:
       - kubectl cluster-info
 
-    # ===== Git commit with Ruff + push =====
   commit:
-    desc: "Commit and push"
+    desc: "Format with Ruff, commit with message, and push"
     vars:
       MSG: '{{.CLI_ARGS}}'
     preconditions:

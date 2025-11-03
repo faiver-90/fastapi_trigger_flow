@@ -3,7 +3,7 @@ import os
 import redis.asyncio as redis
 from fastapi import Depends
 
-from app.auth_service.src.shared.services.redis_service import RedisService
+from src.shared.services.redis_service import RedisService
 
 REDIS_URL_ENV = "REDIS_URL"
 DEFAULT_REDIS_URL = "redis://localhost:6379/0"

@@ -1,4 +1,4 @@
-from app.auth_service.src.modules.trigger.types.trigger_types.triggers_temperatures import (
+from src.modules.trigger.types.trigger_types.triggers_temperatures import (
     TemperatureTrigger,
 )
 

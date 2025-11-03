@@ -1,5 +1,5 @@
-from app.auth_service.src.modules.rules.repository.rules_repo import RulesRepo
-from app.auth_service.src.shared.services.base_crud_service import BaseCRUDService
+from src.modules.rules.repository.rules_repo import RulesRepo
+from src.shared.services.base_crud_service import BaseCRUDService
 
 
 class ParseRulesService(BaseCRUDService[RulesRepo]):

@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.auth_service.src.shared.db.base import Base
+from src.shared.db.base import Base
 
 
 class Sources(Base):

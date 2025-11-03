@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import sessionmaker
 
-from app.auth_service.src.shared.db.engine import async_engine, sync_engine
+from src.shared.db.engine import async_engine, sync_engine
 
 AsyncSessionLocal = async_sessionmaker(
     bind=async_engine,

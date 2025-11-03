@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI(title="FastAPI on Kind 8080", version="0.1.0",
-              # root_path="/service-2"
-              )
+app = FastAPI(title="FastAPI on Kind 8080", version="0.1.0")
 
 class Echo(BaseModel):
     message: str
@@ -19,8 +17,8 @@ def health():
 @app.post("/echo")
 def echo(payload: Echo):
     return {"echo": f"{payload.message}"}
-#
-# from sqlalchemy.ext.asyncio import create_async_engine
-#
-# DATABASE_URL = "postgresql+asyncpg://appuser:apppass@postgres:5432/appdb"
-# engine = create_async_engine(DATABASE_URL, echo=True)
+
+from sqlalchemy.ext.asyncio import create_async_engine
+
+DATABASE_URL = "postgresql+asyncpg://appuser:apppass@postgres:5432/appdb"
+engine = create_async_engine(DATABASE_URL, echo=True)

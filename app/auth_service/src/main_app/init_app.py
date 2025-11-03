@@ -3,16 +3,17 @@ from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
 from fastapi.exceptions import HTTPException, RequestValidationError
 
-from app.auth_service.src.modules.auth.api.v1.auth_router import v1_auth
-from app.auth_service.src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
+from src.modules.auth.api.v1.auth_router import v1_auth
+from src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
     generic_exception_handler,
     http_exception_handler,
     validation_exception_handler,
 )
-from app.auth_service.src.modules.notifications.api.v1.router import v1_notification_router
-from app.auth_service.src.modules.source.api.v1.router import v1_api_source
-from app.auth_service.src.modules.trigger.api.v1.trigger_router import v1_trigger_router
-from app.auth_service.src.shared.configs.log_conf import setup_logger
+from src.modules.notifications.api.v1.router import v1_notification_router
+from src.modules.source.api.v1.router import v1_api_source
+from src.modules.trigger.api.v1.trigger_router import v1_trigger_router
+from src.shared.celery_module.celery_worker import celery_app
+from src.shared.configs.log_conf import setup_logger
 
 
 @asynccontextmanager
@@ -29,6 +30,8 @@ def get_app() -> FastAPI:
     from sqlalchemy import text
     from sqlalchemy.exc import SQLAlchemyError
     from sqlalchemy.ext.asyncio import AsyncSession
+
+    from src.shared.db.session import get_async_session
 
     @app_init.get(
         "/health_check",

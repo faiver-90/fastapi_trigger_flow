@@ -1,7 +1,7 @@
 from sqlalchemy import and_, exists, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth_service.src.shared.db.models.auth import User
+from src.shared.db.models.auth import User
 
 
 class UserRepository:

@@ -4,9 +4,9 @@ from pydantic import BaseModel
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth_service.src.shared.base_repo import BaseRepository
-from app.auth_service.src.shared.db import Notifications, Rules, Sources, Triggers, User
-from app.auth_service.src.shared.db.session import AsyncSessionLocal
+from src.shared.base_repo import BaseRepository
+from src.shared.db import Notifications, Rules, Sources, Triggers, User
+from src.shared.db.session import AsyncSessionLocal
 
 
 class RulesCreateSchema(BaseModel):

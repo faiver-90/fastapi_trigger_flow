@@ -2,20 +2,20 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.auth_service.src.modules.source.api.v1.get_service import get_data_source_service
-from app.auth_service.src.modules.source.api.v1.schemas import (
+from src.modules.source.api.v1.get_service import get_data_source_service
+from src.modules.source.api.v1.schemas import (
     SourceCreate,
     SourceOut,
     SourceUpdate,
 )
-from app.auth_service.src.modules.source.services.data_source_service import (
+from src.modules.source.services.data_source_service import (
     CRUDDataSourceService,
 )
-from app.auth_service.src.modules.source.types.data_source_registry import (
+from src.modules.source.types.data_source_registry import (
     DATA_SOURCE_REGISTRY,
 )
-from app.auth_service.src.shared.decorators import log_action
-from app.auth_service.src.shared.deps.auth_dependencies import get_user_id
+from src.shared.decorators import log_action
+from src.shared.deps.auth_dependencies import get_user_id
 
 source_logger = logging.getLogger("source_log")
 

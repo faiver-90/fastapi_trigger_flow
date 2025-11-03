@@ -1,6 +1,6 @@
-from app.auth_service.src.modules.notifications.repository.notification_repo import NotificationRepo
-from app.auth_service.src.modules.trigger.repository.trigger_repo import TriggerRepo
-from app.auth_service.src.shared.services.base_crud_service import BaseCRUDService
+from src.modules.notifications.repository.notification_repo import NotificationRepo
+from src.modules.trigger.repository.trigger_repo import TriggerRepo
+from src.shared.services.base_crud_service import BaseCRUDService
 
 
 class TriggerService(BaseCRUDService[TriggerRepo]):

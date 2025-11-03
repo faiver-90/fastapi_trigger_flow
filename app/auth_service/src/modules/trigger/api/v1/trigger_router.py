@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.auth_service.src.modules.trigger.api.v1.get_service import get_trigger_service
-from app.auth_service.src.modules.trigger.api.v1.trigger_schemas import (
+from src.modules.trigger.api.v1.get_service import get_trigger_service
+from src.modules.trigger.api.v1.trigger_schemas import (
     TriggerCreate,
     TriggerOut,
     TriggerUpdate,
 )
-from app.auth_service.src.modules.trigger.services.trigger_service import TriggerService
-from app.auth_service.src.modules.trigger.types.trigger_registry import TRIGGER_REGISTRY
-from app.auth_service.src.shared.deps.auth_dependencies import get_user_id
+from src.modules.trigger.services.trigger_service import TriggerService
+from src.modules.trigger.types.trigger_registry import TRIGGER_REGISTRY
+from src.shared.deps.auth_dependencies import get_user_id
 
 v1_trigger_router = APIRouter(
     prefix="/trigger",

@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.auth_service.src.shared.db.base import Base
+from src.shared.db.base import Base
 
 
 class User(Base):

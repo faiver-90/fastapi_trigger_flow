@@ -1,10 +1,10 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth_service.src.modules.notifications.repository.notification_repo import NotificationRepo
-from app.auth_service.src.modules.trigger.repository.trigger_repo import TriggerRepo
-from app.auth_service.src.modules.trigger.services.trigger_service import TriggerService
-from app.auth_service.src.shared.db.session import get_async_session
+from src.modules.notifications.repository.notification_repo import NotificationRepo
+from src.modules.trigger.repository.trigger_repo import TriggerRepo
+from src.modules.trigger.services.trigger_service import TriggerService
+from src.shared.db.session import get_async_session
 
 
 async def get_trigger_service(

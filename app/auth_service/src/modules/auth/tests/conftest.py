@@ -9,19 +9,19 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 
-from app.auth_service.src.modules.auth.api.v1.auth_router import v1_auth
-from app.auth_service.src.modules.auth.api.v1.services.auth_service import AuthService
-from app.auth_service.src.modules.auth.configs.crypt_conf import pwd_context
-from app.auth_service.src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
+from src.modules.auth.api.v1.auth_router import v1_auth
+from src.modules.auth.api.v1.services.auth_service import AuthService
+from src.modules.auth.configs.crypt_conf import pwd_context
+from src.modules.auth.exceptions_handle.stream_exceptions_handlers import (
     generic_exception_handler,
     http_exception_handler,
     validation_exception_handler,
 )
-from app.auth_service.src.modules.auth.repositories.jwt_repo import JWTRepo
-from app.auth_service.src.modules.auth.repositories.user_repo import UserRepository
-from app.auth_service.src.shared.db.models.auth import User
-from app.auth_service.src.shared.deps.auth_dependencies import authenticate_user, verify_superuser
-from app.auth_service.src.shared.services.redis_service import RedisService
+from src.modules.auth.repositories.jwt_repo import JWTRepo
+from src.modules.auth.repositories.user_repo import UserRepository
+from src.shared.db.models.auth import User
+from src.shared.deps.auth_dependencies import authenticate_user, verify_superuser
+from src.shared.services.redis_service import RedisService
 
 
 @pytest.fixture(scope="function")
@@ -165,7 +165,7 @@ def auth_api_client():
 
     service = AsyncMock(spec=AuthService)
 
-    from app.auth_service.src.modules.auth.api.v1.deps.get_auth_service import get_auth_service
+    from src.modules.auth.api.v1.deps.get_auth_service import get_auth_service
 
     async def _override():
         return service

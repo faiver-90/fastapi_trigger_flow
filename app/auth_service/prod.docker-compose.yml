@@ -13,7 +13,7 @@ services:
 
   main_service:
 #    container_name: main
-    build: ../..
+    build: .
     deploy:
       replicas: 4
     command: >
@@ -33,7 +33,7 @@ services:
     expose:
       - "8001"
     env_file:
-      - ../../.env
+      - .env
     depends_on:
       - db
       - redis
@@ -45,7 +45,7 @@ services:
   celery-beat:
     container_name: main_beat
     restart: unless-stopped
-    build: ../..
+    build: .
     command: bash -c "
       pip install -r requirements.txt &&
       celery -A src.shared.celery_module.celery_worker.celery_app beat -l info"
@@ -65,7 +65,7 @@ services:
 
   celery-worker:
     container_name: main_celery
-    build: ../..
+    build: .
     restart: unless-stopped
     command: bash -c "
       pip install -r requirements.txt &&
@@ -103,7 +103,7 @@ services:
     image: redis:latest
     restart: always
     env_file:
-      - ../../.env
+      - .env
     ports:
       - "6379:6379"
     environment:

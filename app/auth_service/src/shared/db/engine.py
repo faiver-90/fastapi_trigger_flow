@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.auth_service.src.shared.configs.get_settings import get_settings
+from src.shared.configs.get_settings import get_settings
 
 settings = get_settings()
 # --- Асинхронный движок (для FastAPI) ---

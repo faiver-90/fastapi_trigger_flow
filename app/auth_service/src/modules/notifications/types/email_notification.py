@@ -2,10 +2,10 @@ from email.message import EmailMessage
 
 import aiosmtplib
 
-from app.auth_service.src.modules.notifications.types.base_type_notify_class import (
+from src.modules.notifications.types.base_type_notify_class import (
     BaseTypeNotificationClass,
 )
-from app.auth_service.src.shared.configs.get_settings import get_settings
+from src.shared.configs.get_settings import get_settings
 
 settings = get_settings()
 

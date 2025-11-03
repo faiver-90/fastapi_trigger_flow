@@ -1,21 +1,21 @@
 import logging
 
-from app.auth_service.src.modules.auth.api.v1.schemas import (
+from src.modules.auth.api.v1.schemas import (
     JWTCreateSchema,
     LoginResponseSchema,
     UserCreateSchema,
     UserOutSchema,
 )
-from app.auth_service.src.modules.auth.configs.crypt_conf import pwd_context
-from app.auth_service.src.modules.auth.repositories.jwt_repo import JWTRepo
-from app.auth_service.src.modules.auth.repositories.user_repo import UserRepository
-from app.auth_service.src.shared.configs.get_settings import get_settings
-from app.auth_service.src.shared.configs.settings import Settings
-from app.auth_service.src.shared.services.jwt_service import (
+from src.modules.auth.configs.crypt_conf import pwd_context
+from src.modules.auth.repositories.jwt_repo import JWTRepo
+from src.modules.auth.repositories.user_repo import UserRepository
+from src.shared.configs.get_settings import get_settings
+from src.shared.configs.settings import Settings
+from src.shared.services.jwt_service import (
     create_access_token,
     create_refresh_token,
 )
-from app.auth_service.src.shared.services.redis_service import RedisService
+from src.shared.services.redis_service import RedisService
 
 auth_logger = logging.getLogger("auth")
 errors_logger = logging.getLogger("errors")

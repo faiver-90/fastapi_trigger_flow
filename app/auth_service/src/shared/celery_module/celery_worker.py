@@ -1,6 +1,6 @@
 from celery import Celery
 
-from app.auth_service.src.shared.configs import celery_conf
+from src.shared.configs import celery_conf
 
 
 def get_celery_app() -> Celery:

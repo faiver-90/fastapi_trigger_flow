@@ -1,6 +1,6 @@
-from app.auth_service.src.modules.source.repository.data_source_repo import DataSourceRepo
-from app.auth_service.src.shared.services.base_crud_service import BaseCRUDService
-from app.auth_service.src.shared.services.fernet_service import FernetService
+from src.modules.source.repository.data_source_repo import DataSourceRepo
+from src.shared.services.base_crud_service import BaseCRUDService
+from src.shared.services.fernet_service import FernetService
 
 
 class CRUDDataSourceService(BaseCRUDService[DataSourceRepo]):

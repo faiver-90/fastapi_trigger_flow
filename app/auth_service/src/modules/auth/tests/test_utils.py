@@ -4,7 +4,7 @@ import httpx
 import pytest
 from fastapi import HTTPException
 
-from app.auth_service.src.modules.auth.api.v1.utils import send_request
+from src.modules.auth.api.v1.utils import send_request
 
 
 @pytest.mark.anyio

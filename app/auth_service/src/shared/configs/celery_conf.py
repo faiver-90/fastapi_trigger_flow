@@ -1,7 +1,7 @@
 # src/shared/configs/celery_conf.py
 from kombu import Exchange, Queue
 
-from app.auth_service.src.shared.configs.get_settings import get_settings
+from src.shared.configs.get_settings import get_settings
 
 settings = get_settings()
 

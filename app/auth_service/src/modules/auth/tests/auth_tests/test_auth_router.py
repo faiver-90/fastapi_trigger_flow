@@ -1,7 +1,7 @@
 import pytest
 from fastapi import status
 
-from app.auth_service.src.modules.auth.api.v1.schemas import LoginResponseSchema, UserOutSchema
+from src.modules.auth.api.v1.schemas import LoginResponseSchema, UserOutSchema
 
 
 def test_login_endpoint_success(auth_api_client):

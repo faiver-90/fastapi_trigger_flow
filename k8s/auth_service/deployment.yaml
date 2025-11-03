@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: app/auth_service:local
+          image: app:local
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8001
@@ -37,8 +37,10 @@ spec:
               value: "redis://redis:6379/0"
             - name: DEFAULT_REDIS_URL
               value: "redis://redis:6379/0"
-            - name: REDIS_URL_ENV
-              value: "redis://redis:6379/0"
+            - name: FERNET_KEY
+              value: "_Ay7-Z8Y3Vmeq2QMGNKZ1K0g-lxm5vs9CA-gwDI4JY8="
+            - name: API_KEY_OPENWEATHERMAP
+              value: "87279eb0f35d9ae526066256f90016b2"
           readinessProbe:
             httpGet:
               path: /health_check

@@ -1,7 +1,7 @@
 from sqlalchemy import ARRAY, Boolean, Integer
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
-from app.auth_service.src.shared.db.base import Base
+from src.shared.db.base import Base
 
 
 class Rules(Base):

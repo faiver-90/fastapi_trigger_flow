@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 import pytest
 from jose import JWTError, jwt
 
-from app.auth_service.src.modules.auth.api.v1.schemas import JWTCreateSchema
-from app.auth_service.src.modules.auth.repositories.jwt_repo import JWTRepo
-from app.auth_service.src.shared.configs.get_settings import get_settings
-from app.auth_service.src.shared.services.jwt_service import (
+from src.modules.auth.api.v1.schemas import JWTCreateSchema
+from src.modules.auth.repositories.jwt_repo import JWTRepo
+from src.shared.configs.get_settings import get_settings
+from src.shared.services.jwt_service import (
     create_access_token,
     create_refresh_token,
     create_token,

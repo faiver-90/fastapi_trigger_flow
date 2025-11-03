@@ -3,7 +3,7 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from app.auth_service.src.modules.trigger.types.base_type_trigger_class import (
+from src.modules.trigger.types.base_type_trigger_class import (
     BaseTypeTriggerClass,
 )
 

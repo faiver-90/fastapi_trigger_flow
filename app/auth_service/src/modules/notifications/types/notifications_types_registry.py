@@ -1,7 +1,7 @@
-from app.auth_service.src.modules.notifications.types.console import (
+from src.modules.notifications.types.console import (
     ConsoleNotification,
 )
-from app.auth_service.src.modules.notifications.types.email_notification import (
+from src.modules.notifications.types.email_notification import (
     EmailNotification,
 )
 

@@ -10,8 +10,9 @@ kubectl -n ingress-nginx wait --for=condition=Available --timeout=180s deploy/in
 
 # 1) собери ОБРАЗ тем именем, что в deployment.yaml
 # если там web: app:local — собирай именно app:local
-docker build -t app/auth_service:local ./app/auth_service
-kind load docker-image app/auth_service:local --name dev
+
+docker build -t app:local app/auth_service
+kind load docker-image app:local --name dev
 
 
 # 2) база и секреты
@@ -29,13 +30,13 @@ kubectl -n app apply -f k8s/postgres/alembic-migrations.yaml
 kubectl -n app logs -f job/alembic-upgrade
 
 # 4) приложение
-#kubectl -n app apply -f k8s/auth_service/deployment.yaml
-#kubectl -n app apply -f k8s/auth_service/service.yaml
-#kubectl -n app apply -f k8s/redis.yaml
-#kubectl apply -f k8s/ingress.yaml
-#kubectl -n app get ingress web
+kubectl -n app apply -f k8s/auth_service/deployment.yaml
+kubectl -n app apply -f k8s/auth_service/service.yaml
+kubectl -n app apply -f k8s/redis.yaml
+kubectl apply -f k8s/ingress.yaml
+kubectl -n app get ingress web
 
-kubectl apply -R -f k8s/
+# или kubectl apply -R -f k8s/
 
 kubectl -n app rollout status deploy/web
 
@@ -61,3 +62,11 @@ kubectl -n app logs job/alembic-upgrade
 # локальная проверка без ingress
 kubectl -n app port-forward deploy/web 8001:8001
 curl http://127.0.0.1:8001/health_check
+
+# После изменения кода запускать сборку и рестарт
+```
+docker build -t app:local app/auth_service
+kind load docker-image app:local --name dev
+kubectl -n app rollout restart deploy
+kubectl -n app rollout status deploy
+```

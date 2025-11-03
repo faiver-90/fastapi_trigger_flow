@@ -1,9 +1,9 @@
-from app.auth_service.src.modules.notifications.repository.notification_repo import (
+from src.modules.notifications.repository.notification_repo import (
     NotificationRepo,
 )
-from app.auth_service.src.modules.notifications.services.notification_service import (
+from src.modules.notifications.services.notification_service import (
     CRUDNotificationService,
 )
-from app.auth_service.src.shared.services.base_get_service import base_get_service
+from src.shared.services.base_get_service import base_get_service
 
 get_notification_service = base_get_service(CRUDNotificationService, NotificationRepo)

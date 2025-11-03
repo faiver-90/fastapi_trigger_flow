@@ -2,9 +2,9 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth_service.src.modules.auth.api.v1.schemas import JWTCreateSchema
-from app.auth_service.src.shared.configs.get_settings import get_settings
-from app.auth_service.src.shared.db.models.auth import RefreshToken
+from src.modules.auth.api.v1.schemas import JWTCreateSchema
+from src.shared.configs.get_settings import get_settings
+from src.shared.db.models.auth import RefreshToken
 
 settings = get_settings()
 
